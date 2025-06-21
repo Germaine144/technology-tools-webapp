@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import ProductCard from '../Home/ProductCard';
 import CategoryCard from './CategoryCard';
+import PopularProduct from './PopularProduct';
 import { IoIosPhonePortrait } from 'react-icons/io';
 import { BsSmartwatch } from 'react-icons/bs';
 import { FaCamera } from 'react-icons/fa';
@@ -67,6 +68,7 @@ export default function Home() {
           <CategoryCard key={cat.title} title={cat.title} icon={cat.icon} />
         ))}
       </div>
+
         <div className='flex  gap-10 '>
               <Link href="/products">
   <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">
@@ -90,15 +92,31 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.slice(0, 8).map((product) => (
           <ProductCard
-            key={product.id}
-            title={product.name}
-            body={product.description}
-            image={product.image}
-            price={product.price}
-            rating={product.rating}
-          />
+  key={product.id}
+  id={product.id} // ✅ Add this
+  title={product.name}
+  body={product.description}
+  image={product.image}
+  price={product.price}
+  rating={product.rating}
+  
+/>
+
         ))}
       </div>
+    <h1 className="text-2xl font-bold my-6 cursor-pointer">Popular Products</h1>
+<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'> 
+  {products.slice(0, 4).map((product) => (
+    <PopularProduct
+      key={product.id}
+      title={product.name}
+      body={product.description}
+      image={product.image}
+    />
+  ))}
+</div>
+
+
     </main>
   );
 }
