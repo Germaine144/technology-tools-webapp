@@ -1,29 +1,11 @@
 // src/app/api/products/route.ts
 import { NextResponse } from 'next/server';
 
-// Mock data - replace with your actual data source
 const products = [
+  // Phones (Telephones)
   {
     id: 1,
-    name: "Wireless Headphones",
-    price: 99.99,
-    description: "High-quality wireless headphones with noise cancellation",
-    image: "/image/head13.png",
-    category: "Electronics",
-    rating: 4.5
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    price: 99.99,
-    description: "Smart watch with health tracking and Bluetooth support.",
-    image: "/image/Sport.png",
-    category: "Wearables",
-    rating: 4.2
-  },
-  {
-   id: 3,
-    name: "iPhone 14 Pro",
+    name: "Apple iPhone 14 Pro",
     price: 1099.99,
     description: "Latest iPhone with Dynamic Island and 48MP camera.",
     image: "/image/𝐊𝐚𝐝1.png",
@@ -31,94 +13,150 @@ const products = [
     rating: 4.8
   },
   {
-   id: 4,
+    id: 2,
     name: "Samsung Galaxy S23",
-    price : 899.99,
-     description : "High-end Android phone with sleek design and performance.",
-     image : "/image/head11.png",
-    category : "Telephones",
-    rating : 4.7
+    price: 899.99,
+    description: "High-end Android phone with sleek design and performance.",
+    image: "/image/head11.png",
+    category: "Telephones",
+    rating: 4.7
   },
   {
-   id : 5,
-     name : "Google Pixel 7",
-     price : 649.99,
-     description : "Google's latest phone with Tensor chip and clean Android.",
-     image : "/image/goo.jpg",
-     category : "Telephones",
-     rating : 4.6
+    id: 3,
+    name: "Google Pixel 7",
+    price: 649.99,
+    description: "Google's latest phone with Tensor chip and clean Android.",
+    image: "/image/goo.jpg",
+    category: "Telephones",
+    rating: 4.6
+  },
+
+  // Computers
+  {
+    id: 4,
+    name: "MacBook Pro 16",
+    price: 2499.99,
+    description: "Powerful laptop with M2 Pro chip and retina display.",
+    image: "/image/apple14.png",
+    category: "Computers",
+    rating: 4.9
   },
   {
-    id : 6,
-     name : "MacBook Pro 16",
-     price : 2499.99,
-     description : "Powerful laptop with M2 Pro chip and retina display.",
-     image : "/image/apple14.png",
-     category : "Computers",
-     rating : 4.9
+    id: 5,
+    name: "Dell XPS 13",
+    price: 1299.99,
+    description: "Premium ultrabook with stunning InfinityEdge display.",
+    image: "/image/dell-xps.png",
+    category: "Computers",
+    rating: 4.6
+  },
+
+  // Smart Watches
+  {
+    id: 6,
+    name: "Apple Watch Series 8",
+    price: 399.99,
+    description: "Smart watch with health tracking and crash detection.",
+    image: "/image/sony2.png",
+    category: "Smart Watch",
+    rating: 4.7
   },
   {
-    id : 7,
-     name : "Apple Watch Series 8",
-     price : 399.99,
-     description : "Smart watch with health tracking and crash detection.",
-     image : "/image/sony2.png",
-     category : "Smart Watch",
-     rating : 4.7
-  },
-  {
-    id: 8,
-    name: "Apple iPad",
-    price: 59.99,
-    description: "Fast performance, stunning display, perfect for everyday use.",
-    image: "/image/iPad.png",
-    category: "Home",
+    id: 7,
+    name: "Samsung Galaxy Watch 5",
+    price: 299.99,
+    description: "Smart watch with WearOS and body composition sensor.",
+    image: "/image/watch1.jpg",
+    category: "Smart Watch",
     rating: 4.5
   },
+
+  // Electronics (Headphones)
   {
-    id : 9,
-    name : "Samsung Galaxy Watch 5",
-     price : 299.99,
-     description : "Smart watch with WearOS and body composition sensor.",
-     image : "/image/watch1.jpg",
-     category : "Smart Watch",
-     rating : 4.5
+    id: 8,
+    name: "Sony WH-1000XM4 Headphones",
+    price: 349.99,
+    description: "Industry-leading noise canceling wireless headphones.",
+    image: "/image/head13.png",
+    category: "Electronics",
+    rating: 4.8
   },
-  // {
-  //   id: 10,
-  //   name: "Bluetooth Speaker",
-  //   price: 149.99,
-  //   description: "Portable Bluetooth speaker with premium sound quality",
-  //   image: "/images/product1.jpg",
-  //   category: "Electronics",
-  //   rating: 4.8
-  // },
-  // {
-  //   id: 11,
-  //   name: "Jeans",
-  //   price: 79.99,
-  //   description: "Classic denim jeans with comfortable fit",
-  //   image: "/images/product2.jpg",
-  //   category: "Clothing",
-  //   rating: 4.3
-  // },
-  // {
-  //   id: 12,
-  //   name: "Water Bottle",
-  //   price: 34.99,
-  //   description: "Insulated stainless steel water bottle",
-  //   image: "/images/product3.jpg",
-  //   category: "Sports",
-  //   rating: 4.5
-  // }
+  {
+    id: 9,
+    name: "Bose QuietComfort 45",
+    price: 329.99,
+    description: "Wireless noise cancelling headphones with superior comfort.",
+    image: "/image/bose-headphones.png",
+    category: "Electronics",
+    rating: 4.6
+  },
+
+  // Home & Tablets
+  {
+    id: 10,
+    name: "Apple iPad Pro",
+    price: 799.99,
+    description: "Most advanced iPad with M2 chip and Liquid Retina display.",
+    image: "/image/iPad.png",
+    category: "Home",
+    rating: 4.8
+  },
+
+  // Cameras
+  {
+    id: 11,
+    name: "Canon EOS R6 Mark II",
+    price: 2499.99,
+    description: "Professional mirrorless camera with advanced autofocus.",
+    image: "/image/canon-camera.png",
+    category: "Cameras",
+    rating: 4.9
+  },
+  {
+    id: 12,
+    name: "Sony Alpha A7 IV",
+    price: 2198.99,
+    description: "Full-frame mirrorless camera with 33MP sensor.",
+    image: "/image/sony-camera.png",
+    category: "Cameras",
+    rating: 4.8
+  },
+
+  // Gaming & PlayStation
+  {
+    id: 13,
+    name: "PlayStation 5",
+    price: 499.99,
+    description: "Next-gen gaming console with 4K gaming and ray tracing.",
+    image: "/image/ps5.png",
+    category: "Gaming",
+    rating: 4.9
+  },
+  {
+    id: 14,
+    name: "Xbox Series X",
+    price: 499.99,
+    description: "Most powerful Xbox with 4K gaming and Quick Resume.",
+    image: "/image/xbox-series-x.png",
+    category: "Gaming",
+    rating: 4.8
+  }
 ];
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // If you're fetching from a database, do it here
-    // const products = await db.products.findMany();
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
     
-    return NextResponse.json(products);
+    // Filter by category if provided
+    let filteredProducts = products;
+    if (category && category !== 'all') {
+      filteredProducts = products.filter(product => 
+        product.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+    
+    return NextResponse.json(filteredProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(

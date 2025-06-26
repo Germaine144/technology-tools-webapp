@@ -60,8 +60,9 @@ export default function Home() {
     return <main className="p-6 text-red-500">Error: {error}</main>;
   }
 
-  return (
-    <main className="p-6 max-w-7xl mx-auto bg-white text-black">
+return (
+  <div className="bg-white text-black w-full">
+    <main className="p-6 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Browse By Category</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
         {categoryIcons.map((cat) => (
@@ -69,54 +70,46 @@ export default function Home() {
         ))}
       </div>
 
-        <div className='flex  gap-10 '>
-              <Link href="/products">
-  <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">
-   New Arrival
-  </h1>
-</Link>
+      <div className="flex gap-10">
+        <Link href="/products">
+          <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">New Arrival</h1>
+        </Link>
+        <Link href="/products">
+          <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">Bestseller</h1>
+        </Link>
+        <Link href="/products">
+          <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">Featured Products</h1>
+        </Link>
+      </div>
 
-     <Link href="/products">
-  <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">
- Bestseller
-  </h1>
-</Link>
-    <Link href="/products">
-  <h1 className="text-2xl font-bold mb-4 hover:underline cursor-pointer">
-  Featured Products
-  </h1>
-</Link>
-        </div>
-    
-  
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.slice(0, 8).map((product) => (
           <ProductCard
-  key={product.id}
-  id={product.id} // ✅ Add this
-  title={product.name}
-  body={product.description}
-  image={product.image}
-  price={product.price}
-  rating={product.rating}
-  
-/>
-
+            key={product.id}
+            id={product.id}                                 
+            name={product.name}
+            description={product.description}
+            image={product.image}
+            price={product.price}
+            rating={product.rating}
+            category={product.category}
+          />
         ))}
       </div>
-    <h1 className="text-2xl font-bold my-6 cursor-pointer">Popular Products</h1>
-<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'> 
-  {products.slice(0, 4).map((product) => (
-    <PopularProduct
-      key={product.id}
-      title={product.name}
-      body={product.description}
-      image={product.image}
-    />
-  ))}
-</div>
 
-
+      <h1 className="text-2xl font-bold my-6 cursor-pointer">Popular Products</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {products.slice(0, 4).map((product) => (
+          <PopularProduct
+            key={product.id}
+            title={product.name}
+            body={product.description}
+            image={product.image}
+          />
+        ))}
+      </div>
     </main>
-  );
+  </div>
+);
+
 }
