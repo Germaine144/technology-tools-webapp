@@ -10,6 +10,7 @@ import { FaHeadphones } from 'react-icons/fa';
 import { MdOutlineComputer } from 'react-icons/md';
 import { IoGameControllerSharp } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
+import DiscountCard from './DiscountCard';
 
 interface Product {
   id: number;
@@ -19,6 +20,7 @@ interface Product {
   image: string;
   category: string;
   rating: number;
+  discount?: number;
 }
 
 const categoryIcons = [
@@ -98,16 +100,52 @@ return (
       </div>
 
       <h1 className="text-2xl font-bold my-6 cursor-pointer">Popular Products</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.slice(0, 4).map((product) => (
-          <PopularProduct
-            key={product.id}
-            title={product.name}
-            body={product.description}
-            image={product.image}
-          />
-        ))}
-      </div>
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap">
+  {products.slice(0, 4).map((product, index) => {
+const bgColors = [
+  "bg-white text-black",
+  "bg-gray-100 text-black",
+  "bg-gray-200 text-black",
+  "bg-gray-700 text-white"
+];
+const bgColor = bgColors[index] || "bg-white text-black";
+    return (
+      <PopularProduct
+        key={product.id}
+        title={product.name}
+        body={product.description}
+        image={product.image}
+        bgColor={bgColor}
+      />
+    );
+  })}
+</div>
+
+<h2 className="text-2xl font-bold mb-8 mt-12">Discounts up to -50%</h2>
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  {products.filter(p => p.discount && p.discount > 0).map((product) => {
+    // Calculate discounted price with null safety
+    const discountedPrice = product.discount 
+      ? product.price * (1 - product.discount)
+      : product.price;
+
+    return (
+      <DiscountCard
+        key={product.id}
+        id={product.id}
+        name={product.name}
+        description={product.description}
+        image={product.image}
+        price={discountedPrice}
+        originalPrice={product.price}
+        rating={product.rating}
+        category={product.category}
+        discount={product.discount}
+      />
+    );
+  })}
+</div>
+
     </main>
   </div>
 );

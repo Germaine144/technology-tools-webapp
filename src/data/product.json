@@ -6,7 +6,8 @@
     "description": "High-quality wireless headphones with noise cancellation.",
     "image": "/image/head8.jpg",
     "category": "Electronics",
-    "rating": 4.5
+    "rating": 4.5,
+    "discount": 0.2
   },
   {
     "id": 2,
@@ -15,7 +16,8 @@
     "description": "Smart watch with health tracking and Bluetooth support.",
     "image": "/image/Sport.png",
     "category": "Wearables",
-    "rating": 4.2
+    "rating": 4.2,
+    "discount": 0.15
   },
   {
     "id": 3,

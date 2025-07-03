@@ -7,7 +7,7 @@ type ProductCardProps = {
   image: string;
   price: number;
   rating: number;
-  category: string; // Add category prop
+  category: string; 
   id: number;
 };
 

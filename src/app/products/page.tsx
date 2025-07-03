@@ -147,7 +147,7 @@ const CategoryProductsPage = () => {
   const getCategoryDisplayName = (cat: string) => {
     const categoryMap: Record<string, string> = {
       'telephones': 'Phones',
-      'electronics': 'Electronics',
+      'electronics': 'Electronics & Headphones',
       'computers': 'Laptops & Computers',
       'wearables': 'Watches & Wearables',
       'smart watch': 'Smart Watches',

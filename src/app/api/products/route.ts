@@ -46,7 +46,7 @@ const products = [
     name: "Dell XPS 13",
     price: 1299.99,
     description: "Premium ultrabook with stunning InfinityEdge display.",
-    image: "/image/dell-xps.png",
+    image: "/image/dell.png",
     category: "Computers",
     rating: 4.6
   },
@@ -57,7 +57,7 @@ const products = [
     name: "Apple Watch Series 8",
     price: 399.99,
     description: "Smart watch with health tracking and crash detection.",
-    image: "/image/sony2.png",
+    image: "/image/watchpp.png",
     category: "Smart Watch",
     rating: 4.7
   },
@@ -77,7 +77,7 @@ const products = [
     name: "Sony WH-1000XM4 Headphones",
     price: 349.99,
     description: "Industry-leading noise canceling wireless headphones.",
-    image: "/image/head13.png",
+    image: "/image/sony.png",
     category: "Electronics",
     rating: 4.8
   },
@@ -86,9 +86,18 @@ const products = [
     name: "Bose QuietComfort 45",
     price: 329.99,
     description: "Wireless noise cancelling headphones with superior comfort.",
-    image: "/image/bose-headphones.png",
+    image: "/image/hot.png",
     category: "Electronics",
     rating: 4.6
+  },
+  {
+    id: 9,
+    name: "Bose QuietComfort 45",
+    price: 329.90,
+    description: "Wireless noise cancelling headphones with superior comfort.",
+    image: "/image/boss.png",
+    category: "Electronics",
+    rating: 4.5
   },
 
   // Home & Tablets
@@ -108,7 +117,7 @@ const products = [
     name: "Canon EOS R6 Mark II",
     price: 2499.99,
     description: "Professional mirrorless camera with advanced autofocus.",
-    image: "/image/canon-camera.png",
+    image: "/image/digi.png",
     category: "Cameras",
     rating: 4.9
   },
@@ -117,7 +126,7 @@ const products = [
     name: "Sony Alpha A7 IV",
     price: 2198.99,
     description: "Full-frame mirrorless camera with 33MP sensor.",
-    image: "/image/sony-camera.png",
+    image: "/image/sony2.png",
     category: "Cameras",
     rating: 4.8
   },
@@ -128,7 +137,7 @@ const products = [
     name: "PlayStation 5",
     price: 499.99,
     description: "Next-gen gaming console with 4K gaming and ray tracing.",
-    image: "/image/ps5.png",
+    image: "/image/station.png",
     category: "Gaming",
     rating: 4.9
   },
@@ -137,7 +146,7 @@ const products = [
     name: "Xbox Series X",
     price: 499.99,
     description: "Most powerful Xbox with 4K gaming and Quick Resume.",
-    image: "/image/xbox-series-x.png",
+    image: "/image/play.png",
     category: "Gaming",
     rating: 4.8
   }
