@@ -1,38 +1,82 @@
 'use client';
-import { useRouter } from 'next/navigation';
 
-type ProductCardProps = {
+import { useRouter } from 'next/navigation';
+import { FiHeart } from 'react-icons/fi';
+import { useWishlist } from '../../context/WishlistContext';
+
+interface ProductCardProps {
+  id: number;
   name: string;
   description: string;
   image: string;
   price: number;
-  rating: number;
-  category: string; 
-  id: number;
-};
+  category: string;
+  isHighlighted?: boolean;
+  fromCategory?: boolean;
+}
 
-export default function ProductCard({ name, description, image, price, rating, category, id }: ProductCardProps) {
+export default function ProductCard({ 
+  id, 
+  name,
+  description, 
+  image, 
+  price, 
+  category, 
+  isHighlighted,
+  fromCategory = false
+}: ProductCardProps) {
+  console.log('ProductCard name prop:', name);
   const router = useRouter();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(id);
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isWishlisted) {
+      removeFromWishlist(id);
+    } else {
+      addToWishlist(id);
+    }
+  };
+
+  const handleCardClick = () => {
+    router.push(`/product/${id}`);
+  };
 
   const handleBuyNow = () => {
-    // Navigate to category-specific products page with the current product's category
-    router.push(`/products?category=${category.toLowerCase()}`);
+    if (fromCategory) {
+      router.push(`/BuyNowDetails/${id}`);
+    } else {
+      router.push(`/products/${category.toLowerCase()}`);
+    }
   };
 
   return (
-    <div className="bg-gray-200 rounded shadow p-4 hover:shadow-lg transition">
-      <img src={image} alt={name} className="w-full h-52 object-cover mb-4" />
-      <h2 className="font-semibold text-lg mb-1 text-black">{name}</h2>
-      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{description}</p>
-      <p className="text-xs text-blue-600 font-medium mb-2">{category}</p>
-      <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
-        <span>${price.toFixed(2)}</span>
-        <span>⭐ {rating}</span>
+    <div
+      className={`bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition text-center cursor-pointer relative border border-gray-100 ${isHighlighted ? 'ring-2 ring-blue-400' : ''}`}
+      style={{ minHeight: 370 }}
+    >
+      <button
+        onClick={handleWishlistClick}
+        className="absolute top-4 right-4 p-2 rounded-full bg-white shadow hover:bg-gray-100 transition-colors border border-gray-200"
+        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        type="button"
+      >
+        <FiHeart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+      </button>
+      <div className="flex items-center justify-center mb-6" style={{ width: '180px', height: '180px', margin: '0 auto' }}>
+        <img
+          src={image}
+          alt={description}
+          className="w-full h-full object-contain"/>
       </div>
-      
+    
+      <p className="text-base  text-gray-900 mb-2 mt-8 line-clamp-2" style={{ minHeight: 48 }}>{description}</p>
+      <p className="text-xl font-bold text-gray-950 mb-4">${price.toFixed(2)}</p>
       <button
         onClick={handleBuyNow}
-        className="w-full bg-black text-white py-2 px-7 rounded-2xl flex justify-center items-center cursor-pointer hover:bg-gray-800 transition-colors"
+        className="w-full bg-black text-white py-2 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-base"
+        type="button"
       >
         Buy Now
       </button>

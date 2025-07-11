@@ -1,112 +1,75 @@
-import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+// components/DiscountProduct.tsx
+'use client';
+import { useRouter } from 'next/navigation';
 
-// Props interface for individual discount card
-interface DiscountCardProps {
+interface DiscountProductProps {
   id: number;
-  name: string;
-  description: string;
+  title: string;
   image: string;
-  price: number;
-  originalPrice: number;
-  rating: number;
-  category: string;
+  price?: number;
   discount?: number;
+  bgColor?: string;
 }
 
-// Individual DiscountCard component
-const DiscountCard: React.FC<DiscountCardProps> = ({
+const DiscountProduct = ({ 
   id,
-  name,
-  description,
-  image,
+  title, 
+  image, 
   price,
-  originalPrice,
-  rating,
-  category,
-  discount
-}) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+  discount,
+  bgColor = "bg-white text-black"
+}: DiscountProductProps) => {
+  const router = useRouter();
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  const handleClick = () => {
+    router.push(`/products/${id}`);
   };
 
   return (
-    <div className="bg-gray-100 rounded-3xl p-6 relative group hover:shadow-lg transition-shadow duration-300">
-      {/* Favorite Heart Icon */}
-      <button
-        onClick={toggleFavorite}
-        className="absolute top-6 right-6 z-10 p-1 rounded-full hover:bg-white hover:shadow-md transition-all duration-200"
-      >
-        <Heart 
-          size={24} 
-          className={`${
-            isFavorite 
-              ? 'fill-red-500 text-red-500' 
-              : 'text-gray-400 hover:text-red-500'
-          } transition-colors duration-200`}
-        />
-      </button>
-
+    <div 
+      onClick={handleClick}
+      className={`rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${bgColor} overflow-hidden relative group cursor-pointer h-full flex flex-col`}
+    >
       {/* Discount Badge */}
-      {discount && discount > 0 && (
-        <div className="absolute top-6 left-6 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-          -{Math.round(discount * 100)}%
+      {discount && (
+        <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-bold z-10 shadow-lg">
+          {discount}% OFF
         </div>
       )}
-
-      {/* Product Image Container */}
-      <div className="flex justify-center items-center mb-6 h-48">
+      
+      {/* Image Section */}
+      <div className="relative overflow-hidden flex-grow">
         <img 
-          src={image} 
-          alt={name}
-          className="max-w-full max-h-full object-contain"
+          src={image}
+          alt={title}
+          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 p-4"
         />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
       </div>
-
-      {/* Product Info */}
-      <div className="text-center mb-4">
-        <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-1">
-          {name}
-        </h3>
-        <p className="text-gray-600 text-xs mb-2 line-clamp-2">{description}</p>
-      </div>
-
-      {/* Rating */}
-      <div className="flex justify-center items-center mb-4">
-        <span className="text-yellow-500 text-sm">
-          {'★'.repeat(Math.round(rating))}
-        </span>
-        <span className="ml-1 text-gray-500 text-xs">({rating})</span>
-      </div>
-
-      {/* Price */}
-      <div className="text-center mb-6">
-        <div className="flex items-center justify-center gap-2 mb-1">
-          {discount && discount > 0 ? (
-            <>
-              <span className="text-gray-400 line-through text-sm">
-                ${originalPrice.toFixed(2)}
-              </span>
-              <span className="text-2xl font-bold text-gray-900">
-                ${price.toFixed(2)}
-              </span>
-            </>
-          ) : (
-            <span className="text-2xl font-bold text-gray-900">
+      
+      {/* Info Section */}
+      <div className="p-4 flex flex-col">
+        <h2 className="font-bold text-lg mb-2 line-clamp-2 text-gray-800">{title}</h2>
+        {price && (
+          <div className="mt-auto">
+            <p className="text-gray-900 font-bold">
               ${price.toFixed(2)}
-            </span>
-          )}
-        </div>
+              {discount && (
+                <span className="ml-2 text-sm text-gray-500 line-through">
+                  ${(price / (1 - discount / 100)).toFixed(2)}
+                </span>
+              )}
+            </p>
+          </div>
+        )}
+        <button className="w-full bg-black text-white py-3 px-6 rounded-2xl font-semibold hover:bg-gray-800 transition-colors duration-200 text-sm"
+          onClick={() => window.location.href = `/products/${id}`}
+        >
+          Buy Now
+        </button>
       </div>
-
-      {/* Buy Now Button */}
-      <button className="w-full bg-black text-white py-3 px-6 rounded-2xl font-semibold hover:bg-gray-800 transition-colors duration-200 text-sm">
-        Buy Now
-      </button>
     </div>
   );
 };
 
-export default DiscountCard;
+export default DiscountProduct;
