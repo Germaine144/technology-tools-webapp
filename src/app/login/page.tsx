@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { FcGoogle } from 'react-icons/fc';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -22,24 +23,76 @@ const LoginPage = () => {
     setOtpError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Show OTP step
-      setShowOtp(true);
-    } catch (err) {
-      setError('Invalid email or password');
+      // First, verify email and password
+      const signinResponse = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin', {
+        email,
+        password
+      }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (signinResponse.data.success) {
+        // If signin successful, request OTP
+        try {
+          const otpResponse = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin/request-otp', {
+            email
+          }, {
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (otpResponse.data.success) {
+            // Show OTP step
+            setShowOtp(true);
+          } else {
+            setError('Failed to send OTP. Please try again.');
+          }
+        } catch (otpErr: any) {
+          if (otpErr.response && otpErr.response.data && otpErr.response.data.message) {
+            setError(otpErr.response.data.message);
+          } else {
+            setError('Failed to send OTP. Please try again.');
+          }
+        }
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (err: any) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Invalid email or password');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOtpSubmit = (e: React.FormEvent) => {
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setOtpError("");
-    if (otp === "123456") {
-      router.push("/");
-    } else {
-      setOtpError("Invalid OTP. Please try again.");
+    setLoading(true);
+
+    try {
+      const response = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin/verify-otp', {
+        email,
+        otp
+      }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.data.success) {
+        router.push("/");
+      } else {
+        setOtpError("Invalid OTP. Please try again.");
+      }
+    } catch (err: any) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setOtpError(err.response.data.message);
+      } else {
+        setOtpError("Invalid OTP. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,7 +298,7 @@ const LoginPage = () => {
                   </button>
                 </div>
                 
-                <div className="text-center">
+                <div className="text-center space-y-3">
                   <button
                     type="button"
                     onClick={() => setShowOtp(false)}
@@ -253,6 +306,41 @@ const LoginPage = () => {
                   >
                     ← Back to login
                   </button>
+                  
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setLoading(true);
+                        try {
+                          const response = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin/request-otp', {
+                            email
+                          }, {
+                            headers: { 'Content-Type': 'application/json' }
+                          });
+                          
+                          if (response.data.success) {
+                            setOtpError('');
+                            // You could add a success message here if needed
+                          } else {
+                            setOtpError('Failed to resend OTP. Please try again.');
+                          }
+                        } catch (err: any) {
+                          if (err.response && err.response.data && err.response.data.message) {
+                            setOtpError(err.response.data.message);
+                          } else {
+                            setOtpError('Failed to resend OTP. Please try again.');
+                          }
+                        } finally {
+                          setLoading(false);
+                        }
+                      }}
+                      disabled={loading}
+                      className="text-sm text-indigo-600 hover:text-indigo-500 font-medium transition-colors duration-200 disabled:opacity-50"
+                    >
+                      {loading ? 'Sending...' : 'Resend OTP'}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
