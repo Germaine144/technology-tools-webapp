@@ -1,0 +1,248 @@
+[
+  {
+    "id": 1,
+    "name": "Wireless Headphones",
+    "price": 59.99,
+    "description": "High-quality wireless headphones with noise cancellation.",
+    "image": "/image/head8.jpg",
+    "category": "Electronics",
+    "rating": 4.5,
+    "discount": 0.2
+  },
+  {
+    "id": 2,
+    "name": "Smart Watch",
+    "price": 99.99,
+    "description": "Smart watch with health tracking and Bluetooth support.",
+    "image": "/image/Sport.png",
+    "category": "Wearables",
+    "rating": 4.2,
+    "discount": 0.15
+  },
+  {
+    "id": 3,
+    "name": "Sneakers",
+    "price": 75.5,
+    "description": "Comfortable and stylish running sneakers.",
+    "image": "/images/sneakers.jpg",
+    "category": "Fashion",
+    "rating": 4.7
+  },
+  {
+    "id": 4,
+    "name": "iPhone 14 Pro",
+    "price": 1099.99,
+    "description": "Latest iPhone with Dynamic Island and 48MP camera.",
+    "image": "/image/kado.jpg",
+    "category": "Telephones",
+    "rating": 4.8
+  },
+  {
+    "id": 5,
+    "name": "Samsung Galaxy S23",
+    "price": 899.99,
+    "description": "High-end Android phone with sleek design and performance.",
+    "image": "/image/samsung.png",
+    "category": "Telephones",
+    "rating": 4.7
+  },
+  {
+    "id": 6,
+    "name": "Google Pixel 7",
+    "price": 649.99,
+    "description": "Google's latest phone with Tensor chip and clean Android.",
+    "image": "/image/goo.jpg",
+    "category": "Telephones",
+    "rating": 4.6
+  },
+  {
+    "id": 7,
+    "name": "MacBook Pro 16",
+    "price": 2499.99,
+    "description": "Powerful laptop with M2 Pro chip and retina display.",
+    "image": "/image/apple.jpg",
+    "category": "Computers",
+    "rating": 4.9
+  },
+  {
+    "id": 8,
+    "name": "Dell XPS 13",
+    "price": 1099.99,
+    "description": "Compact and premium Windows laptop with FHD display.",
+    "image": "/images/dellxps13.jpg",
+    "category": "Computers",
+    "rating": 4.5
+  },
+  {
+    "id": 9,
+    "name": "HP Spectre x360",
+    "price": 1299.99,
+    "description": "2-in-1 convertible laptop with touch screen.",
+    "image": "/image/hp.jpg",
+    "category": "Computers",
+    "rating": 4.6
+  },
+  {
+    "id": 10,
+    "name": "Apple Watch Series 8",
+    "price": 399.99,
+    "description": "Smart watch with health tracking and crash detection.",
+    "image": "/image/watch6.jpg",
+    "category": "Smart Watch",
+    "rating": 4.7
+  },
+  {
+    "id": 11,
+    "name": "Samsung Galaxy Watch 5",
+    "price": 299.99,
+    "description": "Smart watch with WearOS and body composition sensor.",
+    "image": "/images/galaxywatch5.jpg",
+    "category": "Smart Watch",
+    "rating": 4.5
+  },
+  {
+    "id": 12,
+    "name": "Garmin Venu 2",
+    "price": 349.99,
+    "description": "Advanced fitness watch with GPS and AMOLED display.",
+    "image": "/images/garminvenu2.jpg",
+    "category": "Smart Watch",
+    "rating": 4.4
+  },
+  {
+    "id": 13,
+    "name": "Canon EOS R50",
+    "price": 749.99,
+    "description": "Compact mirrorless camera with 4K video support.",
+    "image": "/images/canonr50.jpg",
+    "category": "Camera",
+    "rating": 4.5
+  },
+  {
+    "id": 14,
+    "name": "Sony Alpha A6400",
+    "price": 899.99,
+    "description": "Fast mirrorless camera with excellent autofocus.",
+    "image": "/images/sonya6400.jpg",
+    "category": "Camera",
+    "rating": 4.6
+  },
+  {
+    "id": 15,
+    "name": "Nikon Z50",
+    "price": 859.99,
+    "description": "DX-format camera with 4K video and compact build.",
+    "image": "/images/nikonz50.jpg",
+    "category": "Camera",
+    "rating": 4.4
+  },
+  {
+    "id": 16,
+    "name": "Sony WH-1000XM5",
+    "price": 399.99,
+    "description": "Top-tier noise cancelling headphones.",
+    "image": "/images/sonyxm5.jpg",
+    "category": "Headphones",
+    "rating": 4.9
+  },
+  {
+    "id": 17,
+    "name": "Apple AirPods Max",
+    "price": 549.99,
+    "description": "High-fidelity over-ear headphones with spatial audio.",
+    "image": "/images/airpodsmax.jpg",
+    "category": "Headphones",
+    "rating": 4.7
+  },
+  {
+    "id": 18,
+    "name": "Bose QuietComfort 45",
+    "price": 329.99,
+    "description": "Comfortable headphones with top noise cancellation.",
+    "image": "/images/boseqc45.jpg",
+    "category": "Headphones",
+    "rating": 4.6
+  },
+  {
+    "id": 19,
+    "name": "PlayStation 5 Console",
+    "price": 499.99,
+    "description": "Next-gen Sony gaming console with ultra-fast SSD.",
+    "image": "/images/ps5.jpg",
+    "category": "Gaming",
+    "rating": 4.9
+  },
+  {
+    "id": 20,
+    "name": "PlayStation DualSense Controller",
+    "price": 69.99,
+    "description": "Haptic feedback and adaptive triggers for PS5.",
+    "image": "/images/dualsense.jpg",
+    "category": "Gaming",
+    "rating": 4.8
+  },
+  {
+    "id": 21,
+    "name": "PlayStation VR2",
+    "price": 549.99,
+    "description": "Immersive next-gen virtual reality headset for PS5.",
+    "image": "/images/psvr2.jpg",
+    "category": "Gaming",
+    "rating": 4.6
+  },
+  {
+    "id": 22,
+    "name": "iPhone SE (3rd Gen)",
+    "price": 429.99,
+    "description": "Affordable iPhone with A15 Bionic chip.",
+    "image": "/images/iphonese.jpg",
+    "category": "Telephones",
+    "rating": 4.4
+  },
+  {
+    "id": 23,
+    "name": "Asus ROG Strix G16",
+    "price": 1499.99,
+    "description": "Gaming laptop with RTX 4060 and high refresh screen.",
+    "image": "/images/asusrog.jpg",
+    "category": "Computers",
+    "rating": 4.7
+  },
+  {
+    "id": 24,
+    "name": "Lenovo Legion 5",
+    "price": 1199.99,
+    "description": "Powerful gaming laptop with Ryzen processor.",
+    "image": "/images/legion5.jpg",
+    "category": "Computers",
+    "rating": 4.6
+  },
+  {
+    "id": 25,
+    "name": "DJI Pocket 2",
+    "price": 349.99,
+    "description": "Pocket-sized gimbal camera for smooth 4K footage.",
+    "image": "/images/djipocket2.jpg",
+    "category": "Camera",
+    "rating": 4.5
+  },
+  {
+    "id": 26,
+    "name": "Beats Studio Buds",
+    "price": 149.99,
+    "description": "Compact wireless earbuds with ANC.",
+    "image": "/images/beatsstudiobuds.jpg",
+    "category": "Headphones",
+    "rating": 4.3
+  },
+  {
+  "id": 27,
+  "name": "Huawei Watch GT 3",
+  "price": 229.99,
+  "description": "Stylish smart watch with long battery life.",
+  "image": "/images/huaweigt3.jpg",
+  "category": "Smart Watch",
+  "rating": 4.2
+} 
+]
+

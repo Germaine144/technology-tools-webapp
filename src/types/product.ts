@@ -1,0 +1,71 @@
+// types/product.ts
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+  category: string;
+  rating?: number;
+  discount?: number;
+  brand?: string;
+  storage?: string;
+  color?: string;
+  protectionClass?: string;
+  screenDiagonal?: string;
+  screenType?: string;
+  batteryCapacity?: string;
+  connectivity?: string;
+  cameraMP?: string;
+  resolution?: string;
+  sensorType?: string;
+  lensMount?: string;
+  videoResolution?: string;
+  strapMaterial?: string;
+  features?: string;
+  waterResistance?: string;
+  type?: string;
+  noiseCancellation?: string;
+  batteryLife?: string;
+  driverSize?: string;
+  screenSize?: string;
+  pencilSupport?: string;
+  processor?: string;
+  ram?: string;
+  graphics?: string;
+  models?: string;
+  accessories?: string;
+  bundles?: string;
+}
+
+export interface FilterState {
+  priceRange: [number, number];
+  brands: string[];
+  colors: string[];
+  storage?: string[];
+  protectionClass?: string[];
+  screenDiagonal?: string[];
+  screenType?: string[];
+  batteryCapacity?: string[];
+  connectivity?: string[];
+  cameraMP?: string[];
+  resolution?: string[];
+  sensorType?: string[];
+  lensMount?: string[];
+  videoResolution?: string[];
+  strapMaterial?: string[];
+  features?: string[];
+  waterResistance?: string[];
+  type?: string[];
+  noiseCancellation?: string[];
+  batteryLife?: string[];
+  driverSize?: string[];
+  screenSize?: string[];
+  pencilSupport?: string[];
+  processor?: string[];
+  ram?: string[];
+  graphics?: string[];
+  models?: string[];
+  accessories?: string[];
+  bundles?: string[];
+}
