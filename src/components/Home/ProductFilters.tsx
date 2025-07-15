@@ -6,7 +6,7 @@ import { FilterState } from '../../types/product';
 interface ProductFiltersProps {
   category: string;
   filters: FilterState;
-  onFilterChange: (filterType: keyof FilterState, value: any) => void;
+  onFilterChange: (filterType: keyof FilterState, value: string[] | number[]) => void;
   onCheckboxChange: (filterType: keyof FilterState, value: string) => void;
   onClearFilters: () => void;
 }

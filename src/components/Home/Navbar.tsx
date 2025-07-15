@@ -12,19 +12,20 @@ import { FaCamera, FaHeadphones } from "react-icons/fa";
 import { IoLogoPlaystation } from "react-icons/io5";
 import { useWishlist } from '../../../src/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
-import axios from "axios";
-import { useRouter } from "next/navigation";
+// import axios from "axios";
+// import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [showWishlist, setShowWishlist] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const { wishlist } = useWishlist();
-  const { cart, removeFromCart } = useCart();
+  // FIX: Removed 'removeFromCart' from destructuring as it was unused.
+  const { cart } = useCart();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // FIX: The unused '_totalPrice' constant has been removed.
   
   // Function to close all popups
   const closeAllPopups = () => {
@@ -43,17 +44,8 @@ const Navbar = () => {
     { href: "/products/gaming", icon: <IoLogoPlaystation />, label: "Gaming" },
   ];
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("https://e-tech-store-6d7o.onrender.com/api/auth/logout", {}, {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" }
-      });
-      router.push("/login");
-    } catch (err) {
-      // Optionally handle error
-    }
-  };
+  // FIX: The unused '_handleLogout' function has been removed to resolve the errors.
+  // You can re-add it here when you're ready to implement the logout button.
 
   return (
     <>

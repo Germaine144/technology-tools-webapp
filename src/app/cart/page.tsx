@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image'; // Import the Next.js Image component
 import { useCart } from '@/context/CartContext';
 
 export default function ShoppingCartPage() {
@@ -49,7 +50,8 @@ export default function ShoppingCartPage() {
             </svg>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h1>
-          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Looks like you haven't added any items to your cart yet.</p>
+          {/* FIX: Escaped the apostrophe in "haven't" */}
+          <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Looks like you haven&apos;t added any items to your cart yet.</p>
           <Link 
             href="/" 
             className="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm sm:text-base"
@@ -78,9 +80,12 @@ export default function ShoppingCartPage() {
                     {/* Product Image and Info - Mobile Layout */}
                     <div className="flex items-center space-x-3 sm:space-x-4 flex-1">
                       <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img 
+                        {/* FIX: Replaced <img> with the optimized Next.js <Image> component */}
+                        <Image 
                           src={item.image} 
                           alt={item.name}
+                          width={80}
+                          height={80}
                           className="w-full h-full object-cover"
                         />
                       </div>

@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRouter, useSearchParams } from "next/navigation";
 
 interface WishlistContextType {
   wishlist: number[];
@@ -12,6 +11,15 @@ interface WishlistContextType {
   wishlistCount: number;
 }
 
+interface WishlistItem {
+  id: number;
+  // Add other properties as needed
+}
+
+interface WishlistCountResponse {
+  count: number;
+}
+
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 const LOCAL_WISHLIST_KEY = 'guest_wishlist';
@@ -19,18 +27,6 @@ const LOCAL_WISHLIST_KEY = 'guest_wishlist';
 export const WishlistProvider = ({ children }: { children: React.ReactNode }) => {
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [wishlistCount, setWishlistCount] = useState<number>(0);
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect");
-
-  const handleLoginSuccess = () => {
-    if (redirect) {
-      router.push(redirect); // e.g., '/checkout/address'
-    } else {
-      router.push("/");
-    }
-  };
 
   // Helper: Load guest wishlist from localStorage
   const loadGuestWishlist = () => {
@@ -52,21 +48,23 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
       // Logged in: fetch from API
       const fetchWishlist = async () => {
         try {
-          const res = await axios.get('https://e-tech-store-6d7o.onrender.com/api/wishlist', {
+          const res = await axios.get<WishlistItem[]>('https://e-tech-store-6d7o.onrender.com/api/wishlist', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          setWishlist(res.data.map((item: any) => item.id));
-        } catch (err) {
+          setWishlist(res.data.map((item: WishlistItem) => item.id));
+        } catch (error) {
+          console.error('Failed to fetch wishlist:', error);
           setWishlist([]);
         }
       };
       const fetchWishlistCount = async () => {
         try {
-          const res = await axios.get('https://e-tech-store-6d7o.onrender.com/api/wishlist/count', {
+          const res = await axios.get<WishlistCountResponse>('https://e-tech-store-6d7o.onrender.com/api/wishlist/count', {
             headers: { Authorization: `Bearer ${token}` }
           });
           setWishlistCount(res.data.count);
-        } catch (err) {
+        } catch (error) {
+          console.error('Failed to fetch wishlist count:', error);
           setWishlistCount(0);
         }
       };
@@ -90,8 +88,8 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
         });
         setWishlist(prev => [...prev, productId]);
         setWishlistCount(prev => prev + 1);
-      } catch (err) {
-        // Optionally handle error
+      } catch (error) {
+        console.error('Failed to add to wishlist:', error);
       }
     } else {
       // Guest: update localStorage
@@ -121,8 +119,8 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
         );
         setWishlist(prev => prev.filter(id => id !== productId));
         setWishlistCount(prev => Math.max(0, prev - 1));
-      } catch (err) {
-        // Optionally handle error
+      } catch (error) {
+        console.error('Failed to remove from wishlist:', error);
       }
     } else {
       // Guest: update localStorage

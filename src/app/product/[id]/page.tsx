@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image'; // Import the Next.js Image component
 
 interface Product {
   id: number;
@@ -27,8 +28,9 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<string>('');
-  const [selectedMemory, setSelectedMemory] = useState<string>('');
+  // FIX: Destructured only the setter functions as the state variables were unused.
+  const [, setSelectedColor] = useState<string>('');
+  const [, setSelectedMemory] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews'>('description');
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function ProductDetailPage() {
         setProduct(found || null);
         if (found?.colors?.length) setSelectedColor(found.colors[0]);
         if (found?.memoryOptions?.length) setSelectedMemory(found.memoryOptions[0]);
-      } catch (error) {
+      } catch { // FIX: Removed the unused error variable from the catch block.
         setProduct(null);
       } finally {
         setIsLoading(false);
@@ -64,9 +66,11 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Product Image */}
           <div className="flex items-center justify-center">
-            <img
+            <Image
               src={product.image}
               alt={product.name}
+              width={320}
+              height={320}
               className="w-full max-w-xs h-auto object-contain rounded-xl bg-gray-50 p-6"
             />
           </div>

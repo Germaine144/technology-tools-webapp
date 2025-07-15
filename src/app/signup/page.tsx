@@ -43,9 +43,10 @@ const SignupPage = () => {
       setTimeout(() => {
         router.push('/login');
       }, 2000);
-    } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+    } catch (err) { // FIX: Replaced 'any' with a more specific type assertion
+      const axiosError = err as { response?: { data?: { message?: string } } };
+      if (axiosError.response && axiosError.response.data && axiosError.response.data.message) {
+        setError(axiosError.response.data.message);
       } else {
         setError('Registration failed. Please try again.');
       }

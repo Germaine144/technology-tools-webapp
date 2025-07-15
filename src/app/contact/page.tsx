@@ -30,7 +30,7 @@ const ContactUs = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -38,7 +38,7 @@ const ContactUs = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -61,7 +61,7 @@ const ContactUs = () => {
     setTimeout(() => setSubmitted(false), 5000);
   };
 
-  const handleNewsletterSubmit = async (e) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newsletter) return;
     
@@ -80,7 +80,7 @@ const ContactUs = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">Get in Touch</h1>
           <p className="text-base sm:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto px-2">
-            We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            We&lsquo;d love to hear from you. Send us a message and we&lsquo;ll respond as soon as possible.
           </p>
         </div>
       </div>
@@ -102,7 +102,7 @@ const ContactUs = () => {
               <FaEnvelope className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
             </div>
             <h3 className="text-lg sm:text-xl font-semibold mb-2">Email Us</h3>
-            <p className="text-sm sm:text-base text-gray-600 mb-2">We'll respond within 24 hours</p>
+            <p className="text-sm sm:text-base text-gray-600 mb-2">We&lsquo;ll respond within 24 hours</p>
             <p className="text-base sm:text-lg font-medium text-green-600 break-all">support@cyber.com</p>
           </div>
           
@@ -124,7 +124,7 @@ const ContactUs = () => {
               <div className="mb-6 sm:mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">Send us a message</h2>
                 <p className="text-gray-600 text-base sm:text-lg">
-                  Have a question or need help choosing the right product? We're here to help!
+                  Have a question or need help choosing the right product? We&lsquo;re here to help!
                 </p>
               </div>
 
@@ -182,7 +182,7 @@ const ContactUs = () => {
                       Phone Number *
                     </label>
                     <div className="flex">
-                      <select className="px-2 py-2 sm:px-3 sm:py-3 border-2 border-gray-200 rounded-l-xl focus:outline-none focus:border-gray-500 bg-gray-50 text-sm sm:text-base">
+                      <select onChange={handleInputChange} name="countryCode" className="px-2 py-2 sm:px-3 sm:py-3 border-2 border-gray-200 rounded-l-xl focus:outline-none focus:border-gray-500 bg-gray-50 text-sm sm:text-base">
                         <option>+971</option>
                         <option>+1</option>
                         <option>+44</option>
@@ -263,7 +263,7 @@ const ContactUs = () => {
                     <FaCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-green-800 font-semibold text-sm sm:text-base">Message sent successfully!</p>
-                      <p className="text-green-600 text-xs sm:text-sm">We'll get back to you within 24 hours.</p>
+                      <p className="text-green-600 text-xs sm:text-sm">We&lsquo;ll get back to you within 24 hours.</p>
                     </div>
                   </div>
                 )}
@@ -273,10 +273,8 @@ const ContactUs = () => {
 
           {/* Sidebar */}
           <div className="space-y-6 sm:space-y-8">
-            {/* Contact Info */}
             <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Contact Information</h3>
-              
               <div className="space-y-4 sm:space-y-6">
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -287,7 +285,6 @@ const ContactUs = () => {
                     <p className="text-gray-600 text-sm sm:text-base break-words">123 Tech Street, Dubai, UAE</p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <FaClock className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
@@ -299,7 +296,6 @@ const ContactUs = () => {
                     <p className="text-gray-600 text-sm sm:text-base">Sunday: Closed</p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <FaPhone className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
@@ -312,8 +308,6 @@ const ContactUs = () => {
                 </div>
               </div>
             </div>
-
-            {/* Social Media */}
             <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Follow Us</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -339,12 +333,9 @@ const ContactUs = () => {
                 </a>
               </div>
             </div>
-
-            {/* Newsletter */}
             <div className="bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white">
               <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Stay Updated</h3>
               <p className="text-blue-100 mb-4 sm:mb-6 text-sm sm:text-base">Subscribe to our newsletter for the latest updates and offers.</p>
-              
               <form onSubmit={handleNewsletterSubmit} className="space-y-3 sm:space-y-4">
                 <input
                   type="email"
@@ -361,7 +352,6 @@ const ContactUs = () => {
                   Subscribe
                 </button>
               </form>
-
               {newsletterSubmitted && (
                 <div className="mt-4 bg-green-500/20 border border-green-400/30 rounded-xl p-3">
                   <p className="text-green-100 text-xs sm:text-sm font-medium">✓ Successfully subscribed to newsletter!</p>

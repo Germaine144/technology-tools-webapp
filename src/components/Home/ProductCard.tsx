@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; // Import the Next.js Image component
 import { FiHeart } from 'react-icons/fi';
 import { useWishlist } from '../../context/WishlistContext';
 
@@ -43,7 +44,8 @@ export default function ProductCard({
     router.push(`/product/${id}`);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the card's click event from firing
     if (fromCategory) {
       router.push(`/BuyNowDetails/${id}`);
     } else {
@@ -53,6 +55,7 @@ export default function ProductCard({
 
   return (
     <div
+      onClick={handleCardClick} // Make the entire card clickable
       className={`bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition text-center cursor-pointer relative border border-gray-100 ${isHighlighted ? 'ring-2 ring-blue-400' : ''}`}
       style={{ minHeight: 370 }}
     >
@@ -65,13 +68,16 @@ export default function ProductCard({
         <FiHeart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
       </button>
       <div className="flex items-center justify-center mb-6" style={{ width: '180px', height: '180px', margin: '0 auto' }}>
-        <img
+        {/* Use the Next.js Image component for optimization */}
+        <Image
           src={image}
           alt={description}
+          width={180}
+          height={180}
           className="w-full h-full object-contain"/>
       </div>
     
-      <p className="text-base  text-gray-900 mb-2 mt-8 line-clamp-2" style={{ minHeight: 48 }}>{description}</p>
+      <p className="text-base text-gray-900 mb-2 mt-8 line-clamp-2" style={{ minHeight: 48 }}>{description}</p>
       <p className="text-xl font-bold text-gray-950 mb-4">${price.toFixed(2)}</p>
       <button
         onClick={handleBuyNow}

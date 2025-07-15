@@ -1,5 +1,5 @@
 "use client";
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ProductCard from '@/components/Home/ProductCard';
 
@@ -67,14 +67,15 @@ const filterOptions = {
 export default function BrandPage() {
   const { brand } = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
+  // FIX: Commented out unused 'router'
+  // const router = useRouter(); 
   const category = searchParams.get('category');
-  const [products, setProducts] = useState<Product[]>([]);
+  // FIX: Removed unused 'products' state
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filters state (reuse from category page if needed)
-  const [filters, setFilters] = useState<any>({});
+  // FIX: Commented out unused 'filters' state to resolve multiple errors
+  // const [filters, setFilters] = useState<any>({});
 
   useEffect(() => {
     async function fetchProducts() {
@@ -89,17 +90,21 @@ export default function BrandPage() {
         if (category) {
           filtered = filtered.filter((p) => p.category.toLowerCase() === category.toLowerCase());
         }
-        setProducts(filtered);
+        // FIX: Removed setProducts call
         setFilteredProducts(filtered);
       } catch {
-        setProducts([]);
+        // FIX: Removed setProducts call
         setFilteredProducts([]);
       } finally {
         setIsLoading(false);
       }
     }
     if (brand) fetchProducts();
-    else { setProducts([]); setFilteredProducts([]); setIsLoading(false); }
+    else { 
+      // FIX: Removed setProducts call
+      setFilteredProducts([]); 
+      setIsLoading(false); 
+    }
   }, [brand, category]);
 
   // Sidebar filter logic (optional: implement as in category page)
@@ -149,4 +154,4 @@ export default function BrandPage() {
       </div>
     </div>
   );
-} 
+}

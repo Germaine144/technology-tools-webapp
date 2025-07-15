@@ -248,7 +248,7 @@ export default function PaymentPage() {
                         </div>
                         <div className="ml-3">
                           <p className="text-sm text-blue-700">
-                            You'll receive a payment request on your phone. Please approve it to complete the transaction.
+                            You&apos;ll receive a payment request on your phone. Please approve it to complete the transaction.
                           </p>
                         </div>
                       </div>

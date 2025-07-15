@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image'; // Import the Next.js Image component
 import { useRouter } from 'next/navigation';
 
 interface PopularProductProps {
@@ -25,10 +26,13 @@ const PopularProduct = ({ title, body, image, productId, bgColor = "bg-white tex
     <div
       className={`rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${bgColor} text-center`}>
       <div className="relative overflow-hidden rounded-lg mb-4">
-        <img
+        {/* Replaced <img> with the optimized Next.js Image component */}
+        <Image
           src={image}
           alt={title}
-          className="w-[160px] h-[160px] object-cover transition-transform duration-300 hover:scale-105 mx-auto"/>
+          width={160}
+          height={160}
+          className="object-cover transition-transform duration-300 hover:scale-105 mx-auto"/>
       </div>
       <h2 className="font-bold text-xl mb-2 line-clamp-2">{title}</h2>
       <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">{body}</p>

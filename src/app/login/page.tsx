@@ -1,13 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { FcGoogle } from 'react-icons/fc';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { useEffect } from 'react';
 
-const LoginPage = () => {
+// FIX: Defined a specific type for Axios errors to avoid using 'any'
+type AxiosErrorType = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+    status?: number;
+  };
+};
+
+// Separate component that uses useSearchParams
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -57,15 +67,16 @@ const LoginPage = () => {
       } else {
         setError('Failed to send OTP. Please try again.');
       }
-    } catch (err: any) {
-      console.error('OTP Request Error:', err);
-      console.error('Error response:', err.response?.data);
+    } catch (err) {
+      const axiosError = err as AxiosErrorType;
+      console.error('OTP Request Error:', axiosError);
+      console.error('Error response:', axiosError.response?.data);
 
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.response?.status === 404) {
+      if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message);
+      } else if (axiosError.response?.status === 404) {
         setError('User not found. Please check your credentials.');
-      } else if (err.response?.status === 401) {
+      } else if (axiosError.response?.status === 401) {
         setError('Invalid credentials. Please try again.');
       } else {
         setError('Failed to send OTP. Please try again.');
@@ -88,14 +99,8 @@ const LoginPage = () => {
 
     try {
       const payloadOptions = [
-        {
-          email: email.trim().toLowerCase(),
-          otp: otp
-        },
-        {
-          email: email.trim().toLowerCase(),
-          otp: parseInt(otp, 10)
-        }
+        { email: email.trim().toLowerCase(), otp: otp },
+        { email: email.trim().toLowerCase(), otp: parseInt(otp, 10) }
       ];
 
       let response;
@@ -108,35 +113,30 @@ const LoginPage = () => {
           response = await axios.post(
             'https://e-tech-store-6d7o.onrender.com/api/auth/signin/verify-otp',
             payloadOptions[i],
-            {
-              headers: { 'Content-Type': 'application/json' }
-            }
+            { headers: { 'Content-Type': 'application/json' } }
           );
 
           console.log('OTP verification response:', response.data);
           break;
-        } catch (tempErr: any) {
-          lastError = tempErr;
-          console.error(`Payload ${i + 1} failed:`, tempErr.response?.data);
+        } catch (tempErr) {
+          const axiosTempError = tempErr as AxiosErrorType;
+          lastError = axiosTempError;
+          console.error(`Payload ${i + 1} failed:`, axiosTempError.response?.data);
 
-          if (tempErr.response?.status !== 400) {
+          if (axiosTempError.response?.status !== 400) {
             break;
           }
         }
       }
 
-      // FIX 1: Check for successful login message instead of just token
       if (response && (response.data.token || response.data.message?.includes('Login successful') || response.data.message?.includes('Welcome back'))) {
-        // Store token if available
         if (response.data.token) {
           localStorage.setItem('authToken', response.data.token);
         }
         
-        // Store user data if available
         if (response.data.user) {
           localStorage.setItem('user', JSON.stringify(response.data.user));
         } else if (response.data.id) {
-          // If user data is directly in response.data
           const userData = {
             id: response.data.id,
             username: response.data.username,
@@ -155,17 +155,18 @@ const LoginPage = () => {
       } else {
         throw lastError;
       }
-    } catch (err: any) {
-      console.error('OTP Verification Error:', err);
-      console.error('Error response:', err.response?.data);
+    } catch (err) {
+      const axiosError = err as AxiosErrorType;
+      console.error('OTP Verification Error:', axiosError);
+      console.error('Error response:', axiosError.response?.data);
 
-      if (err.response?.data?.message) {
-        setOtpError(err.response.data.message);
-      } else if (err.response?.status === 400) {
+      if (axiosError.response?.data?.message) {
+        setOtpError(axiosError.response.data.message);
+      } else if (axiosError.response?.status === 400) {
         setOtpError("Invalid or expired OTP. Please request a new one.");
-      } else if (err.response?.status === 404) {
+      } else if (axiosError.response?.status === 404) {
         setOtpError("OTP verification service not found. Please contact support.");
-      } else if (err.response?.status === 429) {
+      } else if (axiosError.response?.status === 429) {
         setOtpError("Too many attempts. Please wait before trying again.");
       } else {
         setOtpError("Failed to verify OTP. Please try again.");
@@ -187,9 +188,7 @@ const LoginPage = () => {
           email: email.trim().toLowerCase(),
           password: password
         },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
+        { headers: { 'Content-Type': 'application/json' } }
       );
 
       console.log('Resend OTP response:', response.data);
@@ -200,12 +199,13 @@ const LoginPage = () => {
       } else {
         setOtpError('Failed to resend OTP. Please try again.');
       }
-    } catch (err: any) {
-      console.error('Resend OTP Error:', err);
-      console.error('Error response:', err.response?.data);
+    } catch (err) {
+      const axiosError = err as AxiosErrorType;
+      console.error('Resend OTP Error:', axiosError);
+      console.error('Error response:', axiosError.response?.data);
 
-      if (err.response?.data?.message) {
-        setOtpError(err.response.data.message);
+      if (axiosError.response?.data?.message) {
+        setOtpError(axiosError.response.data.message);
       } else {
         setOtpError('Failed to resend OTP. Please try again.');
       }
@@ -388,7 +388,7 @@ const LoginPage = () => {
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Verify Your Identity</h3>
-              <p className="text-gray-600 text-sm">We've sent a verification code to your email</p>
+              <p className="text-gray-600 text-sm">We&apos;ve sent a verification code to your email</p>
               <p className="text-indigo-600 text-sm font-medium mt-1">{email}</p>
               
               <form className="space-y-6 mt-6" onSubmit={handleOtpSubmit}>
@@ -506,7 +506,7 @@ const LoginPage = () => {
 
               <div className="mt-8 text-center">
                 <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
+                  Don&apos;t have an account?{' '}
                   <Link href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
                     Create account
                   </Link>
@@ -529,6 +529,15 @@ const LoginPage = () => {
         }
       `}</style>
     </div>
+  );
+};
+
+// Main component with Suspense wrapper
+const LoginPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 };
 

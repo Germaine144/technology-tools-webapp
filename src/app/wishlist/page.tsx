@@ -3,7 +3,8 @@
 import { useWishlist } from '@/context/WishlistContext';
 import Link from 'next/link';
 import React from 'react';
-import { FaHeart } from 'react-icons/fa';  // Import heart icon
+import Image from 'next/image'; // Import the Next.js Image component
+import { FaHeart } from 'react-icons/fa';
 import productsData from '@/data/product.json';
 
 const WishlistPage = () => {
@@ -34,7 +35,14 @@ const WishlistPage = () => {
           <div key={product.id} className="border rounded-lg p-4 shadow-sm">
             <div className="bg-gray-100 h-48 mb-4 rounded-md flex items-center justify-center">
               {product.image ? (
-                <img src={product.image} alt={product.name} className="h-full object-contain" />
+                // FIX: Replaced <img> with the optimized Next.js <Image> component
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  width={180}
+                  height={180}
+                  className="h-full w-auto object-contain"
+                />
               ) : (
                 <span className="text-gray-400">No Image</span>
               )}

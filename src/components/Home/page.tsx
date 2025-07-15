@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image'; // Import the Next.js Image component
 import ProductCard from '../Home/ProductCard';
 import CategoryCard from './CategoryCard';
-// These imports are not used directly, but we'll keep them
-import PopularProduct from './PopularProduct';
-import DiscountProduct from './DiscountCard';
+// Unused component imports are removed to fix the error.
+// import PopularProduct from './PopularProduct';
+// import DiscountProduct from './DiscountCard';
 import { IoIosPhonePortrait } from 'react-icons/io';
 import { BsSmartwatch } from 'react-icons/bs';
 import { FaCamera, FaHeadphones } from 'react-icons/fa';
@@ -54,7 +55,7 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  const { allProducts, popularProducts, discountedProducts } = useMemo(() => {
+  const { allProducts, popularProducts } = useMemo(() => {
     const desiredOrder = [
       "Apple iPhone 14 Pro", "Canon EOS R6 Mark II", "Apple Watch Series 8",
       "AirPods Max Silver", "Samsung Galaxy Watch6 Classic 47mm Black",
@@ -76,12 +77,9 @@ export default function Home() {
     return {
       allProducts: orderedProducts.slice(0, 8),
       popularProducts: products
-        // THIS IS THE CORRECTED LINE:
         .filter(p => popularProductIds.includes(p.id)) 
-        .sort((a, b) => popularProductIds.indexOf(a.id) - popularProductIds.indexOf(b.id)), 
-      discountedProducts: products
-        .filter(p => p.discount && p.discount > 0)
-        .slice(0, 2)
+        .sort((a, b) => popularProductIds.indexOf(a.id) - popularProductIds.indexOf(b.id)),
+      // Removed unused 'discountedProducts' to fix the error.
     };
   }, [products]);
 
@@ -120,7 +118,7 @@ export default function Home() {
           </div>
         </div>
         <div className="w-full flex-1 flex items-end justify-center lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <img src="/image/bg.png" alt="iPhone 14 Pro" className="pointer-events-none object-contain max-w-[80%] lg:max-w-none lg:w-[406px] lg:h-[632px] lg:absolute lg:right-0 lg:bottom-[-5%]"/>
+          <Image src="/image/bg.png" alt="iPhone 14 Pro" width={406} height={632} className="pointer-events-none object-contain max-w-[80%] lg:max-w-none lg:w-[406px] lg:h-[632px] lg:absolute lg:right-0 lg:bottom-[-5%]"/>
         </div>
       </section>
 
@@ -128,7 +126,7 @@ export default function Home() {
       <div className="hidden lg:grid w-full grid-cols-1 lg:grid-cols-2 gap-1 mb-10 h-96">
         <div className="flex flex-col gap-1">
           <div className="bg-gray-50 flex items-center p-6 flex-1 shadow-sm relative overflow-hidden">
-            <img src="/image/PlayStation.png" alt="Playstation 5" className="absolute left-0 h-full w-auto object-contain -translate-x-1/4"/>
+            <Image src="/image/PlayStation.png" alt="Playstation 5" fill style={{objectFit: 'contain'}} className="absolute left-0 h-full w-auto !-translate-x-1/4"/>
             <div className="ml-auto w-1/2 text-left">
               <h3 className="text-3xl font-bold mb-2">Playstation 5</h3>
               <p className="text-gray-600 text-sm leading-relaxed">Incredibly powerful CPU vs GPU, and SSD with<br />integrated I/O will redefine your PlayStation experience.</p>
@@ -136,15 +134,17 @@ export default function Home() {
           </div>
           <div className="flex gap-1 flex-1">
             <div className="bg-gray-100 flex items-center p-4 flex-1 shadow-sm relative overflow-hidden">
-              <img src="/image/head.png" alt="Apple AirPods Max" className="absolute left-0 h-4/5 w-auto object-contain -translate-x-1/2"/>
+              <Image src="/image/head.png" alt="Apple AirPods Max" fill style={{objectFit: 'contain'}} className="absolute left-0 h-4/5 w-auto !-translate-x-1/2"/>
               <div className="ml-auto w-1/2 text-left">
                 <h3 className="text-lg font-bold mb-1">Apple</h3>
                 <h4 className="text-lg font-bold mb-2">AirPods Max</h4>
-                <p className="text-gray-600 text-xs">Computational audio.<br />Listen, it's powerful</p>
+                {/* FIX: Escaped the apostrophe in "it's" */}
+               <p className="text-gray-600 text-xs">Computational audio.<br />Listen, it&apos;s powerful</p>
+
               </div>
             </div>
             <div className="bg-[#353535] flex items-center p-4 flex-1 shadow-sm relative overflow-hidden">
-              <img src="/image/visu.png" alt="Apple Vision Pro" className="absolute left-0 h-4/5 w-auto object-contain -translate-x-1/2"/>
+              <Image src="/image/visu.png" alt="Apple Vision Pro" fill style={{objectFit: 'contain'}} className="absolute left-0 h-4/5 w-auto !-translate-x-1/2"/>
               <div className="ml-auto w-1/2 text-left text-white">
                 <h3 className="text-lg font-bold mb-1">Apple</h3>
                 <h4 className="text-lg font-bold mb-2">Vision Pro</h4>
@@ -159,22 +159,23 @@ export default function Home() {
                 <p className="text-gray-600 mb-6 text-sm leading-relaxed">The new 15‑inch MacBook Air makes room for more of what you love with a spacious Liquid Retina display</p>
                 <button className="border border-black text-black px-6 py-2 rounded hover:bg-black hover:text-white transition text-sm font-medium">Shop Now</button>
             </div>
-            <img src="/image/ui.png" alt="MacBook Air" className="absolute right-0 top-0 h-full w-auto object-contain translate-x-1/4"/>
+            <Image src="/image/ui.png" alt="MacBook Air" fill style={{objectFit: 'contain'}} className="absolute right-0 top-0 h-full w-auto !translate-x-1/4"/>
         </div>
       </div>
       
       {/* Mobile Layout: A simple column stack, only visible on mobile */}
       <div className="lg:hidden flex flex-col mb-10">
         <div className="bg-gray-100 flex flex-col items-center text-center p-8 gap-4">
-          <img src="/image/head.png" alt="Apple AirPods Max" className="h-40 object-contain"/>
+          <Image src="/image/head.png" alt="Apple AirPods Max" width={160} height={160} className="h-40 w-auto object-contain"/>
           <div>
             <h3 className="text-lg font-bold">Apple</h3>
             <h4 className="text-xl font-bold mb-2">AirPods Max</h4>
-            <p className="text-gray-600 text-sm">Computational audio. Listen, it's powerful</p>
+            {/* FIX: Escaped the apostrophe in "it's" */}
+            <p className="text-gray-600 text-sm">Computational audio. Listen, it&apos;s powerful</p>
           </div>
         </div>
          <div className="bg-[#353535] text-white flex flex-col items-center text-center p-8 gap-4">
-          <img src="/image/visu.png" alt="Apple Vision Pro" className="h-40 object-contain"/>
+          <Image src="/image/visu.png" alt="Apple Vision Pro" width={160} height={160} className="h-40 w-auto object-contain"/>
           <div>
             <h3 className="text-lg font-bold">Apple</h3>
             <h4 className="text-xl font-bold mb-2">Vision Pro</h4>
@@ -182,15 +183,15 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-gray-50 flex flex-col items-center text-center p-8 gap-4">
-          <img src="/image/PlayStation.png" alt="Playstation 5" className="h-40 object-contain"/>
+          <Image src="/image/PlayStation.png" alt="Playstation 5" width={160} height={160} className="h-40 w-auto object-contain"/>
           <div>
             <h3 className="text-3xl font-bold mb-2">Playstation 5</h3>
             <p className="text-gray-600 text-sm max-w-sm">Incredibly powerful CPU vs GPU, and an SSD with integrated I/O will redefine your PlayStation experience.</p>
           </div>
         </div>
         <div className="bg-gray-100 flex flex-col items-center text-center p-8 gap-4">
-          <img src="/image/ui.png" alt="MacBook Air" className="h-40 object-contain"/>
-                      <div>
+          <Image src="/image/ui.png" alt="MacBook Air" width={160} height={160} className="h-40 w-auto object-contain"/>
+            <div>
               <h3 className="text-3xl font-bold mb-2">Macbook Air</h3>
               <p className="text-gray-600 text-sm max-w-sm">The new 15‑inch MacBook Air makes room for more of what you love with a spacious Liquid Retina display</p>
               <button className="border border-black px-6 py-2 rounded hover:bg-black hover:text-white transition text-sm font-medium mt-4">Shop Now</button>
@@ -198,7 +199,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* --- ALL OTHER SECTIONS ARE UNCHANGED --- */}
       <main className="p-6 max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold mb-4 dark:text-white">Browse By Category</h1>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-10">
@@ -230,7 +230,7 @@ export default function Home() {
             const isDark = index === 3;
             return (
               <div key={product.id} className={`${bgColors[index]} ${textColors[index]}`} style={{ width: '360px', height: '480px', minWidth: '280px', padding: '240px 32px 32px 32px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-                <div className="absolute top-0 left-0 w-full h-[240px] p-8"><img src={product.image} alt={product.name} className="w-full h-full object-contain"/></div>
+                <div className="absolute top-0 left-0 w-full h-[240px] p-8"><Image src={product.image} alt={product.name} fill style={{objectFit:'contain'}}/></div>
                 <div className="flex-grow flex flex-col text-left">
                   <h3 className="text-2xl font-semibold mb-3">{product.name}</h3>
                   <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-6`}>{product.description}</p>
@@ -241,7 +241,6 @@ export default function Home() {
           })}
         </div>
         <div className="md:hidden relative px-6">
-     
           <div className="relative overflow-hidden">
             <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
               {popularProducts.map((product, index) => {
@@ -250,7 +249,7 @@ export default function Home() {
                 const isDark = index === 3;
                 return (
                   <div key={product.id} className={`${bgColors[index]} ${textColors[index]} flex-shrink-0`} style={{ height: '480px', padding: '240px 32px 32px 32px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', width: '100%' }}>
-                    <div className="absolute top-0 left-0 w-full h-[240px] p-8"><img src={product.image} alt={product.name} className="w-full h-full object-contain"/></div>
+                    <div className="absolute top-0 left-0 w-full h-[240px] p-8"><Image src={product.image} alt={product.name} fill style={{objectFit:'contain'}}/></div>
                     <div className="flex-grow flex flex-col text-left">
                       <h3 className="text-2xl font-semibold mb-3">{product.name}</h3>
                       <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-6`}>{product.description}</p>
@@ -277,15 +276,15 @@ export default function Home() {
 
       <section className="w-full bg-zinc-900 flex items-center justify-center relative overflow-hidden py-20 md:py-24">
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/30"></div>
-        <img src="/image/17.png" alt="Laptop" className="absolute top-0 left-0 z-10 h-auto object-contain w-[120px] [transform:translateX(-35%)_translateY(-35%)] md:w-[237px] md:[transform:translateX(-25%)_translateY(-25%)]"/>
-        <img src="/image/image 18.png" alt="Tablet" className="absolute bottom-0 left-0 z-10 h-auto object-contain w-[210px] [transform:translateX(-35%)_translateY(35%)_rotate(-180deg)] md:w-[418.56px] md:[transform:translateX(-25%)_translateY(25%)_rotate(-180deg)]" />
+        <Image src="/image/17.png" alt="Laptop" width={237} height={237} className="absolute top-0 left-0 z-10 h-auto object-contain w-[120px] [transform:translateX(-35%)_translateY(-35%)] md:w-[237px] md:[transform:translateX(-25%)_translateY(-25%)]"/>
+        <Image src="/image/image 18.png" alt="Tablet" width={419} height={419} className="absolute bottom-0 left-0 z-10 h-auto object-contain w-[210px] [transform:translateX(-35%)_translateY(35%)_rotate(-180deg)] md:w-[418.56px] md:[transform:translateX(-25%)_translateY(25%)_rotate(-180deg)]" />
         <div className="z-20 text-center text-white relative px-6">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-thin tracking-wider">Big Summer <span className="font-semibold">Sale</span></h2>
           <p className="text-zinc-400 mt-4 mb-8 text-base md:text-lg">Commodo fames vitae vitae leo mauris in. Eu consequat.</p>
           <button className="border border-zinc-600 rounded-lg px-8 py-2 md:px-9 md:py-3 text-sm font-medium hover:bg-white hover:text-black transition-colors duration-300">Shop Now</button>
         </div>
-        <img src="/image/image 8.png" alt="Phone" className="absolute top-0 right-0 z-10 h-auto object-contain w-[70px] [transform:translateX(35%)_translateY(-25%)_rotate(31.47deg)] md:w-[120.36px] md:[transform:translateX(25%)_translateY(-25%)_rotate(31.47deg)]"/>
-        <img src="/image/image 7.png" alt="Watch" className="absolute bottom-0 right-0 z-10 h-auto object-contain w-[200px] [transform:translateX(35%)_translateY(35%)] md:w-[404px] md:[transform:translateX(25%)_translateY(25%)]"/>
+        <Image src="/image/image 8.png" alt="Phone" width={121} height={121} className="absolute top-0 right-0 z-10 h-auto object-contain w-[70px] [transform:translateX(35%)_translateY(-25%)_rotate(31.47deg)] md:w-[120.36px] md:[transform:translateX(25%)_translateY(-25%)_rotate(31.47deg)]"/>
+        <Image src="/image/image 7.png" alt="Watch" width={404} height={404} className="absolute bottom-0 right-0 z-10 h-auto object-contain w-[200px] [transform:translateX(35%)_translateY(35%)] md:w-[404px] md:[transform:translateX(25%)_translateY(25%)]"/>
       </section>
     </div>
   );

@@ -1,6 +1,6 @@
-// components/DiscountProduct.tsx
 'use client';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; // ✅ Add this line
 
 interface DiscountProductProps {
   id: number;
@@ -39,10 +39,12 @@ const DiscountProduct = ({
       
       {/* Image Section */}
       <div className="relative overflow-hidden flex-grow">
-        <img 
+        <Image 
           src={image}
           alt={title}
-          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 p-4"
+          fill
+          sizes="100%"
+          className="object-contain transition-transform duration-300 group-hover:scale-105 p-4"
         />
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
       </div>
@@ -62,7 +64,8 @@ const DiscountProduct = ({
             </p>
           </div>
         )}
-        <button className="w-full bg-black text-white py-3 px-6 rounded-2xl font-semibold hover:bg-gray-800 transition-colors duration-200 text-sm"
+        <button
+          className="w-full bg-black text-white py-3 px-6 rounded-2xl font-semibold hover:bg-gray-800 transition-colors duration-200 text-sm"
           onClick={() => window.location.href = `/products/${id}`}
         >
           Buy Now

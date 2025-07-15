@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 
 interface CategoryCardProps {
   title: string;

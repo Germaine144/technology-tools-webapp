@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image'; // Import the Next.js Image component
 import { Shield, Award, Headphones, Play } from 'lucide-react';
 
 const AboutPage = () => {
@@ -78,7 +79,8 @@ const AboutPage = () => {
               </div>
               <div>
                 <p className="text-gray-600 leading-relaxed">
-                  Since our founding, we've been committed to providing exceptional customer service, competitive prices, and authentic products. Our team of tech enthusiasts carefully curates each product to ensure you get the best technology solutions for your lifestyle and needs.
+                  {/* FIX: Escaped the apostrophe in "we've" */}
+                  Since our founding, we&apos;ve been committed to providing exceptional customer service, competitive prices, and authentic products. Our team of tech enthusiasts carefully curates each product to ensure you get the best technology solutions for your lifestyle and needs.
                 </p>
               </div>
             </div>
@@ -102,16 +104,22 @@ const AboutPage = () => {
           {/* Image Section with Video */}
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="relative">
-              <img
+              {/* FIX: Replaced <img> with <Image> */}
+              <Image
                 src="/api/placeholder/500/400"
                 alt="Team working"
+                width={500}
+                height={400}
                 className="w-full h-80 object-cover rounded-2xl"
               />
             </div>
             <div className="relative">
-              <img
+              {/* FIX: Replaced <img> with <Image> */}
+              <Image
                 src="/api/placeholder/500/400"
                 alt="Team meeting"
+                width={500}
+                height={400}
                 className="w-full h-80 object-cover rounded-2xl"
               />
               <div className="absolute inset-0 flex items-center justify-center">
@@ -139,9 +147,12 @@ const AboutPage = () => {
             {teamMembers.map((member, index) => (
               <div key={index} className="group">
                 <div className="relative overflow-hidden rounded-2xl mb-4">
-                  <img
+                  {/* FIX: Replaced <img> with <Image> */}
+                  <Image
                     src={member.image}
                     alt={member.name}
+                    width={250}
+                    height={300}
                     className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

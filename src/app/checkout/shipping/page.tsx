@@ -8,7 +8,8 @@ export default function CheckoutShippingPage() {
   const router = useRouter();
   const [selectedShipping, setSelectedShipping] = useState('free');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [scheduledDate, setScheduledDate] = useState(null);
+  // FIX: Explicitly set the type to be Date or null. This is the main fix.
+  const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
 
   const shippingOptions = [
     {
@@ -32,7 +33,7 @@ export default function CheckoutShippingPage() {
     },
   ];
 
-  const handleShippingSelect = (shippingId) => {
+  const handleShippingSelect = (shippingId: string) => {
     setSelectedShipping(shippingId);
     if (shippingId === 'schedule') {
       setShowDatePicker(true);
@@ -45,7 +46,6 @@ export default function CheckoutShippingPage() {
     setShowDatePicker((prev) => !prev);
   };
 
-  // FIX: Back should go to /checkout
   const handleBack = () => {
     router.push('/checkout');
   };
@@ -150,7 +150,7 @@ export default function CheckoutShippingPage() {
               <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200 w-full flex justify-center">
                 <DatePicker
                   selected={scheduledDate}
-                  onChange={(date) => {
+                  onChange={(date: Date | null) => { // Added type here
                     setScheduledDate(date);
                     setShowDatePicker(false);
                   }}
@@ -182,4 +182,4 @@ export default function CheckoutShippingPage() {
       </div>
     </div>
   );
-} 
+}

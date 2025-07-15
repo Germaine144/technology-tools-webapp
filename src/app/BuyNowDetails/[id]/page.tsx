@@ -1,11 +1,13 @@
 'use client';
 import React, { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight, Heart, Share2, ShoppingCart, Check, Minus, Plus } from 'lucide-react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import Image from 'next/image'; // Import the Next.js Image component
+import Link from 'next/link';   // Import the Next.js Link component
 
 export default function ProductDetailPage() {
-  const router = useRouter();
+  // const router = useRouter(); // FIX: Removed unused 'router' variable
   const params = useParams();
   const productId = Number(params.id); // or params.id if your IDs are strings
   const { addToCart } = useCart();
@@ -108,10 +110,12 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="text-sm text-gray-500 mb-6 flex items-center space-x-1">
-          <a href="/" className="hover:underline">Home</a>
-          <span className="mx-1">&gt;</span>
-          <a href="/products/phones" className="hover:underline">Phones</a>
-          <span className="mx-1">&gt;</span>
+          {/* FIX: Replaced <a> with <Link> */}
+          <Link href="/" className="hover:underline">Home</Link>
+          <span className="mx-1"></span>
+          {/* FIX: Replaced <a> with <Link> */}
+          <Link href="/products/phones" className="hover:underline">Phones</Link>
+          <span className="mx-1"></span>
           <span className="text-gray-800 font-semibold">Apple iPhone 14 Pro Max</span>
         </div>
 
@@ -119,9 +123,12 @@ export default function ProductDetailPage() {
           {/* Product Images */}
           <div className="space-y-4">
             <div className="relative bg-white rounded-2xl shadow-sm overflow-hidden">
-              <img 
+              {/* FIX: Replaced <img> with <Image> */}
+              <Image 
                 src={productImages[activeImageIndex]} 
                 alt="iPhone 14 Pro Max"
+                width={400}
+                height={384}
                 className="w-full h-96 object-cover"
               />
               <button 
@@ -148,7 +155,8 @@ export default function ProductDetailPage() {
                     activeImageIndex === index ? 'border-blue-500' : 'border-gray-200'
                   }`}
                 >
-                  <img src={image} alt={`View ${index + 1}`} className="w-full h-full object-cover" />
+                  {/* FIX: Replaced <img> with <Image> */}
+                  <Image src={image} alt={`View ${index + 1}`} width={80} height={80} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -376,9 +384,12 @@ export default function ProductDetailPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map((product) => (
               <div key={product.id} className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                <img 
+                {/* FIX: Replaced <img> with <Image> */}
+                <Image 
                   src={product.image} 
                   alt={product.name}
+                  width={200}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">

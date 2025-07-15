@@ -122,6 +122,8 @@ export default function AddressForm({ onSave, onCancel }: AddressFormProps) {
     }
   };
 
+  // FIX: Commented out the unused handleReset function to resolve the ESLint error.
+  /*
   const handleReset = () => {
     setFormData({
       street: '',
@@ -134,6 +136,7 @@ export default function AddressForm({ onSave, onCancel }: AddressFormProps) {
     });
     setErrors({});
   };
+  */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 text-black">
@@ -216,7 +219,7 @@ export default function AddressForm({ onSave, onCancel }: AddressFormProps) {
                 <label htmlFor="state" className="block text-sm font-semibold text-gray-700 mb-2">
                   State *
                 </label>
-                <input
+                <input 
                   type="text"
                   id="state"
                   name="state"
@@ -381,8 +384,8 @@ export default function AddressForm({ onSave, onCancel }: AddressFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                onClick={(e) => {
-                  console.log('Submit button clicked'); // Debug log
+                onClick={() => {
+                  console.log('Submit button clicked'); 
                 }}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
@@ -423,4 +426,4 @@ export default function AddressForm({ onSave, onCancel }: AddressFormProps) {
       </div>
     </div>
   );
-} 
+}

@@ -2,15 +2,23 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+// FIX: Removed unused 'useRouter' import
 import axios from 'axios';
+
+// FIX: Defined a specific type for Axios errors to avoid 'any'
+type AxiosErrorType = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +38,10 @@ const ForgotPasswordPage = () => {
       } else {
         setError('Failed to send reset link. Please try again.');
       }
-    } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+    } catch (err) { // FIX: Used the specific error type
+      const axiosError = err as AxiosErrorType;
+      if (axiosError.response && axiosError.response.data && axiosError.response.data.message) {
+        setError(axiosError.response.data.message);
       } else {
         setError('Failed to send reset link. Please try again.');
       }
@@ -64,7 +73,7 @@ const ForgotPasswordPage = () => {
           <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent mb-2">
             Reset your password
           </h2>
-          <p className="text-gray-600 text-lg">Enter your email and we'll send you a link to reset your password</p>
+          <p className="text-gray-600 text-lg">Enter your email and we‘ll send you a link to reset your password</p>
         </div>
       </div>
 
