@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
 
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
@@ -9,7 +11,11 @@ const ResetPasswordPage = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!password || !confirmPassword) {
@@ -20,11 +26,32 @@ const ResetPasswordPage = () => {
       setError("Passwords do not match.");
       return;
     }
+    if (!token) {
+      setError("Invalid or missing reset token.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      setSuccess(true);
+    try {
+      const response = await axios.post("https://e-tech-store-6d7o.onrender.com/api/auth/reset-password", {
+        password,
+        token
+      }, {
+        headers: { "Content-Type": "application/json" }
+      });
+      if (response.data.success) {
+        setSuccess(true);
+      } else {
+        setError(response.data.message || "Failed to reset password.");
+      }
+    } catch (err: any) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Failed to reset password. Please try again.");
+      }
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

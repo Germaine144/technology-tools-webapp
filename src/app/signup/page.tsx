@@ -7,10 +7,11 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 const SignupPage = () => {
-  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,17 +23,19 @@ const SignupPage = () => {
     setLoading(true);
     setError('');
 
-    // if (password !== confirmPassword) {
-    //   setError('Passwords do not match');
-    //   setLoading(false);
-    //   return;
-    // }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
 
     try {
       await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signup', {
-        username,
+        firstName,
+        lastName,
         email,
-        password
+        password,
+        confirmPassword,
       }, {
         headers: { 'Content-Type': 'application/json' }
       });
@@ -123,18 +126,34 @@ const SignupPage = () => {
             <div className="space-y-5">
               <div>
                 <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Username
+                  FirstName
                 </label>
                 <input
-                  id="username"
-                  name="username"
+                  id="fistname"
+                  name="firstname"
                   type="text"
                   autoComplete="username"
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm hover:bg-white/90"
-                  placeholder="Enter your username"
+                  placeholder="Enter your Firstname"
+                />
+              </div>
+               <div>
+                <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+                  LastName
+                </label>
+                <input
+                  id="lastname"
+                  name="lastname"
+                  type="text"
+                  autoComplete="username"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm hover:bg-white/90"
+                  placeholder="Enter your lastname"
                 />
               </div>
 
@@ -189,7 +208,7 @@ const SignupPage = () => {
                   </button>
                 </div>
               </div>
-{/* 
+
               <div>
                 <label htmlFor="confirm-password" className="block text-sm font-semibold text-gray-700 mb-2">
                   Confirm Password
@@ -205,7 +224,8 @@ const SignupPage = () => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/70 backdrop-blur-sm hover:bg-white/90"
                   placeholder="Confirm your password"
                 />
-              </div> */}
+                
+              </div>
             </div>
 
             <div className="flex items-center mt-6">

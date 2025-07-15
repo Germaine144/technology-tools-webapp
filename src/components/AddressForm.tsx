@@ -1,57 +1,77 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Save, X } from 'lucide-react';
+import { MapPin, Phone, Save, X, Home, Building2 } from 'lucide-react';
 
-export default function AddressForm({ onSave, onCancel }) {
-  const [formData, setFormData] = useState({
+interface AddressFormData {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone: string;
+  label: 'HOME' | 'OFFICE';
+}
+
+interface AddressFormProps {
+  onSave: (data: AddressFormData) => void;
+  onCancel: () => void;
+}
+
+export default function AddressForm({ onSave, onCancel }: AddressFormProps) {
+  const [formData, setFormData] = useState<AddressFormData>({
     street: '',
     city: '',
     state: '',
     zipCode: '',
     country: '',
-    phone: ''
+    phone: '',
+    label: 'HOME'
   });
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Record<string, string> = {};
     
-    if (!formData.street.trim()) {
+    console.log('Validating form data:', formData); // Debug log
+    
+    if (!formData.street || !formData.street.trim()) {
       newErrors.street = 'Street address is required';
     }
     
-    if (!formData.city.trim()) {
+    if (!formData.city || !formData.city.trim()) {
       newErrors.city = 'City is required';
     }
     
-    if (!formData.state.trim()) {
+    if (!formData.state || !formData.state.trim()) {
       newErrors.state = 'State is required';
     }
     
-    if (!formData.zipCode.trim()) {
+    if (!formData.zipCode || !formData.zipCode.trim()) {
       newErrors.zipCode = 'ZIP code is required';
     } else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
       newErrors.zipCode = 'Please enter a valid ZIP code (e.g., 12345 or 12345-6789)';
     }
     
-    if (!formData.country.trim()) {
+    if (!formData.country || !formData.country.trim()) {
       newErrors.country = 'Country is required';
     }
     
-    if (!formData.phone.trim()) {
+    if (!formData.phone || !formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
       newErrors.phone = 'Please enter a valid phone number';
     }
     
+    console.log('Validation errors:', newErrors); // Debug log
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(`Input change - ${name}:`, value); // Debug log
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -64,16 +84,25 @@ export default function AddressForm({ onSave, onCancel }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form submitted!'); // Debug log
     if (!validateForm()) {
+      console.log('Form validation failed'); // Debug log
       return;
     }
+    console.log('Form validation passed, proceeding with submission'); // Debug log
     setIsSubmitting(true);
-    setTimeout(() => {
-      if (onSave) onSave(formData);
-      setIsSubmitting(false);
+    
+    try {
+      // Call the onSave function with the form data
+      console.log('Submitting form data:', formData); // Debug log
+      if (onSave) {
+        onSave(formData);
+      }
       setIsSuccess(true);
+      
+      // Reset form after a short delay
       setTimeout(() => {
         setFormData({
           street: '',
@@ -81,11 +110,16 @@ export default function AddressForm({ onSave, onCancel }) {
           state: '',
           zipCode: '',
           country: '',
-          phone: ''
+          phone: '',
+          label: 'HOME'
         });
         setIsSuccess(false);
-      }, 2000);
-    }, 1000);
+        setIsSubmitting(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving address:', error);
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -95,13 +129,14 @@ export default function AddressForm({ onSave, onCancel }) {
       state: '',
       zipCode: '',
       country: '',
-      phone: ''
+      phone: '',
+      label: 'HOME'
     });
     setErrors({});
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 text-black">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -113,7 +148,11 @@ export default function AddressForm({ onSave, onCancel }) {
         </div>
 
         {/* Form Container */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <form 
+          onSubmit={handleSubmit} 
+          className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+          noValidate
+        >
           {/* Success Message */}
           {isSuccess && (
             <div className="bg-green-50 border-b border-green-200 p-4">
@@ -147,6 +186,7 @@ export default function AddressForm({ onSave, onCancel }) {
                   errors.street ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                 }`}
                 placeholder="Enter your street address"
+                required
               />
               {errors.street && <p className="mt-1 text-sm text-red-600">{errors.street}</p>}
             </div>
@@ -167,6 +207,7 @@ export default function AddressForm({ onSave, onCancel }) {
                     errors.city ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                   }`}
                   placeholder="Enter city"
+                  required
                 />
                 {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
               </div>
@@ -185,6 +226,7 @@ export default function AddressForm({ onSave, onCancel }) {
                     errors.state ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                   }`}
                   placeholder="Enter state"
+                  required
                 />
                 {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
               </div>
@@ -206,6 +248,7 @@ export default function AddressForm({ onSave, onCancel }) {
                     errors.zipCode ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                   }`}
                   placeholder="12345"
+                  required
                 />
                 {errors.zipCode && <p className="mt-1 text-sm text-red-600">{errors.zipCode}</p>}
               </div>
@@ -224,6 +267,7 @@ export default function AddressForm({ onSave, onCancel }) {
                     errors.country ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                   }`}
                   placeholder="Enter country"
+                  required
                 />
                 {errors.country && <p className="mt-1 text-sm text-red-600">{errors.country}</p>}
               </div>
@@ -246,9 +290,90 @@ export default function AddressForm({ onSave, onCancel }) {
                     errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                   }`}
                   placeholder="+1 (555) 123-4567"
+                  required
                 />
               </div>
               {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+            </div>
+
+            {/* Address Label */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Address Label *
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="relative">
+                  <input
+                    type="radio"
+                    name="label"
+                    value="HOME"
+                    checked={formData.label === 'HOME'}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+                  <div className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                    formData.label === 'HOME' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}>
+                    <div className="flex items-center justify-center">
+                      <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                        formData.label === 'HOME' 
+                          ? 'border-blue-500 bg-blue-500' 
+                          : 'border-gray-300'
+                      }`}>
+                        {formData.label === 'HOME' && (
+                          <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                        )}
+                      </div>
+                      <Home className={`w-5 h-5 mr-2 ${
+                        formData.label === 'HOME' ? 'text-blue-600' : 'text-gray-500'
+                      }`} />
+                      <span className={`font-medium ${
+                        formData.label === 'HOME' ? 'text-blue-700' : 'text-gray-700'
+                      }`}>
+                        Home
+                      </span>
+                    </div>
+                  </div>
+                </label>
+
+                <label className="relative">
+                  <input
+                    type="radio"
+                    name="label"
+                    value="OFFICE"
+                    checked={formData.label === 'OFFICE'}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+                  <div className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                    formData.label === 'OFFICE' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}>
+                    <div className="flex items-center justify-center">
+                      <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                        formData.label === 'OFFICE' 
+                          ? 'border-blue-500 bg-blue-500' 
+                          : 'border-gray-300'
+                      }`}>
+                        {formData.label === 'OFFICE' && (
+                          <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                        )}
+                      </div>
+                      <Building2 className={`w-5 h-5 mr-2 ${
+                        formData.label === 'OFFICE' ? 'text-blue-600' : 'text-gray-500'
+                      }`} />
+                      <span className={`font-medium ${
+                        formData.label === 'OFFICE' ? 'text-blue-700' : 'text-gray-700'
+                      }`}>
+                        Office
+                      </span>
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -256,6 +381,9 @@ export default function AddressForm({ onSave, onCancel }) {
               <button
                 type="submit"
                 disabled={isSubmitting}
+                onClick={(e) => {
+                  console.log('Submit button clicked'); // Debug log
+                }}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isSubmitting ? (

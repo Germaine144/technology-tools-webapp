@@ -2,6 +2,7 @@
 import type { Product, FilterState } from '@/types/product';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import ProductCard from '@/components/Home/ProductCard';
 
 // Utility function to calculate filter option counts
@@ -54,10 +55,11 @@ export default function ProductsPage() {
   const highlightId = searchParams.get('highlight');
   const modelParam = searchParams.get('model');
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('name');
+  const [showFilters, setShowFilters] = useState(false);
   
   // Initialize all possible filters
   const [filters, setFilters] = useState<FilterState>({
@@ -149,26 +151,25 @@ export default function ProductsPage() {
   const currentFilterOptions = filterOptions[categoryString as keyof typeof filterOptions] || filterOptions.phones;
 
   useEffect(() => {
-    async function fetchProducts() {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/products?category=${categoryString}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: Product[] = await response.json();
-        setProducts(data);
-        setFilteredProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setProducts([]);
-        setFilteredProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProducts();
-  }, [categoryString]);
+    setIsLoading(true);
+    Promise.all([
+      axios.get("https://e-tech-store-6d7o.onrender.com/api/products"),
+      axios.get("https://e-tech-store-6d7o.onrender.com/api/categories")
+    ]).then(([productsRes, categoriesRes]) => {
+      setProducts(productsRes.data);
+      setCategories(categoriesRes.data);
+    }).catch(() => {
+      setProducts([]);
+      setCategories([]);
+    }).finally(() => setIsLoading(false));
+  }, []);
+
+  // Find the category object by slug
+  const currentCategory = categories.find(cat => cat.name.toLowerCase() === String(category).toLowerCase());
+  // Filter products by category (assuming product.category matches category name or id)
+  const filteredProducts = currentCategory
+    ? products.filter(p => p.category === currentCategory.name || p.category === currentCategory.id)
+    : products;
 
   // Reset filters when category changes
   useEffect(() => {
@@ -208,7 +209,7 @@ export default function ProductsPage() {
   }, [categoryString]);
 
   useEffect(() => {
-    let filtered = products.filter(product => {
+    let filtered = filteredProducts.filter(product => {
       // Price range filter
       if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) {
         return false;
@@ -263,9 +264,9 @@ export default function ProductsPage() {
       }
     });
 
-    setFilteredProducts(filtered);
+    // setFilteredProducts(filtered); // Removed
     setCurrentPage(1);
-  }, [products, filters, sortBy, modelParam, categoryString]);
+  }, [filteredProducts, filters, sortBy, modelParam, categoryString]);
 
   const handleFilterChange = (filterType: keyof FilterState, value: any) => {
     setFilters(prev => ({
@@ -380,45 +381,157 @@ export default function ProductsPage() {
     );
   };
 
+  // Filter Modal for Mobile
+  const FilterModal = () => (
+    <div className={`fixed inset-0 z-50 ${showFilters ? 'block' : 'hidden'} lg:hidden`}>
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowFilters(false)} />
+      <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold">Filters</h2>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="mb-8">
+            <h3 className="font-semibold mb-3">Price</h3>
+            <div className="flex items-center space-x-2 mb-2">
+              <input 
+                type="number" 
+                value={filters.priceRange[0]} 
+                onChange={(e) => handleFilterChange('priceRange', [Number(e.target.value), filters.priceRange[1]])} 
+                className="w-20 px-2 py-1 border rounded text-sm" 
+                min="0" 
+              />
+              <span>-</span>
+              <input 
+                type="number" 
+                value={filters.priceRange[1]} 
+                onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])} 
+                className="w-20 px-2 py-1 border rounded text-sm" 
+                min="0" 
+              />
+            </div>
+            <input 
+              type="range" 
+              min="0" 
+              max="2000" 
+              step="50" 
+              value={filters.priceRange[1]} 
+              onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])} 
+              className="w-full" 
+            />
+          </div>
+          
+          {/* Render only relevant filters */}
+          {Object.keys(dynamicFilterOptions).map((filterKey) =>
+            renderFilterSection(filterKey as keyof FilterState, filterKey.charAt(0).toUpperCase() + filterKey.slice(1))
+          )}
+          
+          <button 
+            onClick={clearFilters} 
+            className="mt-6 w-full py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium"
+          >
+            Clear all filters
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#fafbfc] text-black">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="text-sm text-gray-500 mb-6 flex items-center space-x-1">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        {/* Breadcrumb */}
+        <div className="text-sm text-gray-500 mb-4 sm:mb-6 flex items-center space-x-1">
           <a href="/" className="hover:underline">Home</a>
           <span className="mx-1">&gt;</span>
           <span className="capitalize text-gray-800 font-semibold">{categoryString}</span>
         </div>
-        <div className="flex gap-8">
-          {/* Sidebar Filters */}
-          <aside className="w-72 flex-shrink-0">
+
+        {/* Mobile Filter Button */}
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={() => setShowFilters(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+            </svg>
+            <span>Filters</span>
+          </button>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Desktop Sidebar Filters */}
+          <aside className="hidden lg:block w-72 flex-shrink-0">
             <div className="bg-white rounded-2xl shadow p-6 sticky top-6">
               <h2 className="text-xl font-bold mb-6">Filters</h2>
               <div className="mb-8">
                 <h3 className="font-semibold mb-3">Price</h3>
                 <div className="flex items-center space-x-2 mb-2">
-                  <input type="number" value={filters.priceRange[0]} onChange={(e) => handleFilterChange('priceRange', [Number(e.target.value), filters.priceRange[1]])} className="w-20 px-2 py-1 border rounded text-sm" min="0" />
+                  <input 
+                    type="number" 
+                    value={filters.priceRange[0]} 
+                    onChange={(e) => handleFilterChange('priceRange', [Number(e.target.value), filters.priceRange[1]])} 
+                    className="w-20 px-2 py-1 border rounded text-sm" 
+                    min="0" 
+                  />
                   <span>-</span>
-                  <input type="number" value={filters.priceRange[1]} onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])} className="w-20 px-2 py-1 border rounded text-sm" min="0" />
+                  <input 
+                    type="number" 
+                    value={filters.priceRange[1]} 
+                    onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])} 
+                    className="w-20 px-2 py-1 border rounded text-sm" 
+                    min="0" 
+                  />
                 </div>
-                <input type="range" min="0" max="2000" step="50" value={filters.priceRange[1]} onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])} className="w-full" />
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="2000" 
+                  step="50" 
+                  value={filters.priceRange[1]} 
+                  onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], Number(e.target.value)])} 
+                  className="w-full" 
+                />
               </div>
               {/* Render only relevant filters */}
               {Object.keys(dynamicFilterOptions).map((filterKey) =>
                 renderFilterSection(filterKey as keyof FilterState, filterKey.charAt(0).toUpperCase() + filterKey.slice(1))
               )}
-              <button onClick={clearFilters} className="mt-6 w-full py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium">Clear all filters</button>
+              <button 
+                onClick={clearFilters} 
+                className="mt-6 w-full py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium"
+              >
+                Clear all filters
+              </button>
             </div>
           </aside>
+
           {/* Product Grid */}
-          <main className="flex-1">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center space-x-4">
-                <span className="text-base text-gray-600">Selected Products:</span>
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-base font-semibold">{filteredProducts.length}</span>
+          <main className="flex-1 min-w-0">
+            {/* Header Controls */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <span className="text-sm sm:text-base text-gray-600">Selected Products:</span>
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm sm:text-base font-semibold">
+                  {filteredProducts.length}
+                </span>
               </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-base text-gray-600">Sort by:</span>
-                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="border rounded px-3 py-1 text-base">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <span className="text-sm sm:text-base text-gray-600 hidden sm:inline">Sort by:</span>
+                <select 
+                  value={sortBy} 
+                  onChange={(e) => setSortBy(e.target.value)} 
+                  className="border rounded px-2 sm:px-3 py-1 text-sm sm:text-base min-w-0"
+                >
                   <option value="name">Name</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
@@ -426,8 +539,10 @@ export default function ProductsPage() {
                 </select>
               </div>
             </div>
+
+            {/* Products Display */}
             {currentProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-10">
                 {currentProducts.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -443,28 +558,115 @@ export default function ProductsPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
+              <div className="text-center py-8 sm:py-12">
                 <div className="text-gray-400 mb-4">
-                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <p className="text-gray-600">No products found matching your filters</p>
-                <button onClick={clearFilters} className="mt-4 text-blue-600 hover:text-blue-800">Clear all filters</button>
+                <p className="text-gray-600 text-sm sm:text-base">No products found matching your filters</p>
+                <button 
+                  onClick={clearFilters} 
+                  className="mt-4 text-blue-600 hover:text-blue-800 text-sm sm:text-base"
+                >
+                  Clear all filters
+                </button>
               </div>
             )}
+
+            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center space-x-2">
-                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="px-3 py-1 rounded border disabled:opacity-50">Previous</button>
-                {[...Array(totalPages)].map((_, i) => (
-                  <button key={i + 1} onClick={() => setCurrentPage(i + 1)} className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-black text-white' : 'border hover:bg-gray-50'}`}>{i + 1}</button>
-                ))}
-                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="px-3 py-1 rounded border disabled:opacity-50">Next</button>
+              <div className="flex justify-center items-center space-x-1 sm:space-x-2 overflow-x-auto pb-2">
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} 
+                  disabled={currentPage === 1} 
+                  className="px-2 sm:px-3 py-1 rounded border disabled:opacity-50 text-sm sm:text-base flex-shrink-0"
+                >
+                  <span className="hidden sm:inline">Previous</span>
+                  <span className="sm:hidden">Prev</span>
+                </button>
+                
+                {/* Show limited page numbers on mobile */}
+                {totalPages <= 5 ? (
+                  // Show all pages if 5 or fewer
+                  [...Array(totalPages)].map((_, i) => (
+                    <button 
+                      key={i + 1} 
+                      onClick={() => setCurrentPage(i + 1)} 
+                      className={`px-2 sm:px-3 py-1 rounded text-sm sm:text-base flex-shrink-0 ${
+                        currentPage === i + 1 
+                          ? 'bg-black text-white' 
+                          : 'border hover:bg-gray-50'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))
+                ) : (
+                  // Show condensed pagination for more than 5 pages
+                  <>
+                    {currentPage > 3 && (
+                      <>
+                        <button 
+                          onClick={() => setCurrentPage(1)} 
+                          className="px-2 sm:px-3 py-1 rounded border hover:bg-gray-50 text-sm sm:text-base flex-shrink-0"
+                        >
+                          1
+                        </button>
+                        {currentPage > 4 && <span className="px-1 text-gray-500">...</span>}
+                      </>
+                    )}
+                    
+                    {Array.from({ length: 3 }, (_, i) => {
+                      const page = currentPage - 1 + i;
+                      if (page >= 1 && page <= totalPages) {
+                        return (
+                          <button 
+                            key={page} 
+                            onClick={() => setCurrentPage(page)} 
+                            className={`px-2 sm:px-3 py-1 rounded text-sm sm:text-base flex-shrink-0 ${
+                              currentPage === page 
+                                ? 'bg-black text-white' 
+                                : 'border hover:bg-gray-50'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      }
+                      return null;
+                    })}
+                    
+                    {currentPage < totalPages - 2 && (
+                      <>
+                        {currentPage < totalPages - 3 && <span className="px-1 text-gray-500">...</span>}
+                        <button 
+                          onClick={() => setCurrentPage(totalPages)} 
+                          className="px-2 sm:px-3 py-1 rounded border hover:bg-gray-50 text-sm sm:text-base flex-shrink-0"
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
+                
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} 
+                  disabled={currentPage === totalPages} 
+                  className="px-2 sm:px-3 py-1 rounded border disabled:opacity-50 text-sm sm:text-base flex-shrink-0"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <span className="sm:hidden">Next</span>
+                </button>
               </div>
             )}
           </main>
         </div>
       </div>
+
+      {/* Mobile Filter Modal */}
+      <FilterModal />
     </div>
   );
 }

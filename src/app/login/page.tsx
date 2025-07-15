@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { FcGoogle } from 'react-icons/fc';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +15,11 @@ const LoginPage = () => {
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [firstname, setFirstname] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,45 +27,48 @@ const LoginPage = () => {
     setError('');
     setOtpError('');
 
+    if (!firstname.trim() || !email.trim() || !password) {
+      setError('Please fill all fields');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // First, verify email and password
-      const signinResponse = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin', {
-        email,
-        password
-      }, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const payload = {
+        firstname: firstname.trim(),
+        email: email.trim().toLowerCase(),
+        password: password
+      };
 
-      if (signinResponse.data.success) {
-        // If signin successful, request OTP
-        try {
-          const otpResponse = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin/request-otp', {
-            email
-          }, {
-            headers: { 'Content-Type': 'application/json' }
-          });
+      console.log('Requesting OTP with payload:', payload);
 
-          if (otpResponse.data.success) {
-            // Show OTP step
-            setShowOtp(true);
-          } else {
-            setError('Failed to send OTP. Please try again.');
-          }
-        } catch (otpErr: any) {
-          if (otpErr.response && otpErr.response.data && otpErr.response.data.message) {
-            setError(otpErr.response.data.message);
-          } else {
-            setError('Failed to send OTP. Please try again.');
-          }
+      const otpResponse = await axios.post(
+        'https://e-tech-store-6d7o.onrender.com/api/auth/signin/request-otp',
+        payload,
+        {
+          headers: { 'Content-Type': 'application/json' }
         }
+      );
+
+      console.log('OTP request response:', otpResponse.data);
+
+      if (otpResponse.data.success || otpResponse.data.message === "OTP sent to your email.") {
+        setShowOtp(true);
       } else {
-        setError('Invalid email or password');
+        setError('Failed to send OTP. Please try again.');
       }
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.message) {
+      console.error('OTP Request Error:', err);
+      console.error('Error response:', err.response?.data);
+
+      if (err.response?.data?.message) {
         setError(err.response.data.message);
+      } else if (err.response?.status === 404) {
+        setError('User not found. Please check your credentials.');
+      } else if (err.response?.status === 401) {
+        setError('Invalid credentials. Please try again.');
       } else {
-        setError('Invalid email or password');
+        setError('Failed to send OTP. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -69,27 +77,137 @@ const LoginPage = () => {
 
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!otp || otp.length !== 6 || !/^\d+$/.test(otp)) {
+      setOtpError("Please enter a valid 6-digit OTP code");
+      return;
+    }
+
     setOtpError("");
     setLoading(true);
 
     try {
-      const response = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin/verify-otp', {
-        email,
-        otp
-      }, {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const payloadOptions = [
+        {
+          email: email.trim().toLowerCase(),
+          otp: otp
+        },
+        {
+          email: email.trim().toLowerCase(),
+          otp: parseInt(otp, 10)
+        }
+      ];
 
-      if (response.data.success) {
-        router.push("/");
+      let response;
+      let lastError;
+
+      for (let i = 0; i < payloadOptions.length; i++) {
+        try {
+          console.log(`Trying OTP verification with payload ${i + 1}:`, payloadOptions[i]);
+
+          response = await axios.post(
+            'https://e-tech-store-6d7o.onrender.com/api/auth/signin/verify-otp',
+            payloadOptions[i],
+            {
+              headers: { 'Content-Type': 'application/json' }
+            }
+          );
+
+          console.log('OTP verification response:', response.data);
+          break;
+        } catch (tempErr: any) {
+          lastError = tempErr;
+          console.error(`Payload ${i + 1} failed:`, tempErr.response?.data);
+
+          if (tempErr.response?.status !== 400) {
+            break;
+          }
+        }
+      }
+
+      // FIX 1: Check for successful login message instead of just token
+      if (response && (response.data.token || response.data.message?.includes('Login successful') || response.data.message?.includes('Welcome back'))) {
+        // Store token if available
+        if (response.data.token) {
+          localStorage.setItem('authToken', response.data.token);
+        }
+        
+        // Store user data if available
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        } else if (response.data.id) {
+          // If user data is directly in response.data
+          const userData = {
+            id: response.data.id,
+            username: response.data.username,
+            email: response.data.email,
+            roles: response.data.roles
+          };
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+
+        setSuccessMessage("Login successful!");
+        setTimeout(() => {
+          router.push(redirect || "/");
+        }, 1000);
+      } else if (response) {
+        setOtpError(response.data.message || "Invalid OTP. Please try again.");
       } else {
-        setOtpError("Invalid OTP. Please try again.");
+        throw lastError;
       }
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.message) {
+      console.error('OTP Verification Error:', err);
+      console.error('Error response:', err.response?.data);
+
+      if (err.response?.data?.message) {
+        setOtpError(err.response.data.message);
+      } else if (err.response?.status === 400) {
+        setOtpError("Invalid or expired OTP. Please request a new one.");
+      } else if (err.response?.status === 404) {
+        setOtpError("OTP verification service not found. Please contact support.");
+      } else if (err.response?.status === 429) {
+        setOtpError("Too many attempts. Please wait before trying again.");
+      } else {
+        setOtpError("Failed to verify OTP. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    setOtpError('');
+
+    try {
+      const response = await axios.post(
+        'https://e-tech-store-6d7o.onrender.com/api/auth/signin/request-otp',
+        {
+          firstname: firstname.trim(),
+          email: email.trim().toLowerCase(),
+          password: password
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+
+      console.log('Resend OTP response:', response.data);
+
+      if (response.data.success || response.data.message === 'OTP sent to your email.') {
+        setOtpError('New OTP sent successfully!');
+        setTimeout(() => setOtpError(''), 3000);
+      } else {
+        setOtpError('Failed to resend OTP. Please try again.');
+      }
+    } catch (err: any) {
+      console.error('Resend OTP Error:', err);
+      console.error('Error response:', err.response?.data);
+
+      if (err.response?.data?.message) {
         setOtpError(err.response.data.message);
       } else {
-        setOtpError("Invalid OTP. Please try again.");
+        setOtpError('Failed to resend OTP. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -113,16 +231,24 @@ const LoginPage = () => {
         
         <div className="text-center mb-8">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-            Welcome Back
+            {showOtp ? 'Verify OTP' : 'Welcome Back'}
           </h2>
           <p className="text-gray-600 text-sm sm:text-base">
-            Sign in to your account to continue
+            {showOtp ? 'Enter the code sent to your email' : 'Sign in to your account to continue'}
           </p>
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto w-full max-w-md relative z-10">
         <div className="bg-white/80 backdrop-blur-xl py-10 px-6 sm:px-10 shadow-2xl rounded-2xl border border-white/20">
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 flex items-center justify-center">
+              <svg className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-green-700 font-medium">{successMessage}</span>
+            </div>
+          )}
           {!showOtp ? (
             <form className="space-y-6" onSubmit={handleSubmit}>
               {error && (
@@ -141,6 +267,30 @@ const LoginPage = () => {
               )}
 
               <div className="space-y-5">
+                <div>
+                  <label htmlFor="firstname" className="block text-sm font-semibold text-gray-700 mb-2">
+                    First Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="firstname"
+                      name="firstname"
+                      type="text"
+                      autoComplete="given-name"
+                      required
+                      value={firstname}
+                      onChange={(e) => setFirstname(e.target.value)}
+                      className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 bg-white/70 backdrop-blur-sm"
+                      placeholder="Enter your first name"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                     Email address
@@ -234,11 +384,12 @@ const LoginPage = () => {
             <div className="text-center mb-6">
               <div className="w-16 h-16 mx-auto bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center mb-4">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Verify Your Identity</h3>
               <p className="text-gray-600 text-sm">We've sent a verification code to your email</p>
+              <p className="text-indigo-600 text-sm font-medium mt-1">{email}</p>
               
               <form className="space-y-6 mt-6" onSubmit={handleOtpSubmit}>
                 <div>
@@ -252,7 +403,7 @@ const LoginPage = () => {
                       type="text"
                       required
                       value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center text-lg font-mono tracking-widest bg-white/70 backdrop-blur-sm transition-colors duration-200"
                       inputMode="numeric"
                       pattern="[0-9]*"
@@ -260,19 +411,22 @@ const LoginPage = () => {
                       placeholder="123456"
                     />
                   </div>
-                  <p className="mt-2 text-xs text-gray-500">Demo code: 123456</p>
                 </div>
                 
                 {otpError && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 animate-shake">
+                  <div className={`${otpError.includes('successfully') ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border rounded-lg p-4 animate-shake`}>
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        <svg className={`h-5 w-5 ${otpError.includes('successfully') ? 'text-green-500' : 'text-red-500'}`} viewBox="0 0 20 20" fill="currentColor">
+                          {otpError.includes('successfully') ? (
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          ) : (
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          )}
                         </svg>
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm text-red-700 font-medium">{otpError}</p>
+                        <p className={`text-sm ${otpError.includes('successfully') ? 'text-green-700' : 'text-red-700'} font-medium`}>{otpError}</p>
                       </div>
                     </div>
                   </div>
@@ -281,7 +435,7 @@ const LoginPage = () => {
                 <div>
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || otp.length !== 6}
                     className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {loading ? (
@@ -301,7 +455,12 @@ const LoginPage = () => {
                 <div className="text-center space-y-3">
                   <button
                     type="button"
-                    onClick={() => setShowOtp(false)}
+                    onClick={() => {
+                      setShowOtp(false);
+                      setError("");
+                      setOtpError("");
+                      setOtp("");
+                    }}
                     className="text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200"
                   >
                     ← Back to login
@@ -310,31 +469,7 @@ const LoginPage = () => {
                   <div className="text-center">
                     <button
                       type="button"
-                      onClick={async () => {
-                        setLoading(true);
-                        try {
-                          const response = await axios.post('https://e-tech-store-6d7o.onrender.com/api/auth/signin/request-otp', {
-                            email
-                          }, {
-                            headers: { 'Content-Type': 'application/json' }
-                          });
-                          
-                          if (response.data.success) {
-                            setOtpError('');
-                            // You could add a success message here if needed
-                          } else {
-                            setOtpError('Failed to resend OTP. Please try again.');
-                          }
-                        } catch (err: any) {
-                          if (err.response && err.response.data && err.response.data.message) {
-                            setOtpError(err.response.data.message);
-                          } else {
-                            setOtpError('Failed to resend OTP. Please try again.');
-                          }
-                        } finally {
-                          setLoading(false);
-                        }
-                      }}
+                      onClick={handleResendOtp}
                       disabled={loading}
                       className="text-sm text-indigo-600 hover:text-indigo-500 font-medium transition-colors duration-200 disabled:opacity-50"
                     >
