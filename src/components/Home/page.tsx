@@ -186,7 +186,7 @@ export default function Home() {
                 <h3 className="text-lg font-bold mb-1">Apple</h3>
                 <h4 className="text-lg font-bold mb-2">AirPods Max</h4>
                 {/* FIX: Escaped the apostrophe in "it's" */}
-                <p className="text-gray-600 text-xs">Computational audio.<br />Listen, it's powerful</p>
+                <p className="text-gray-600 text-xs">Computational audio.<br />Listen, it&lsquo;s powerful</p>
               </div>
             </div>
             <div className="bg-[#353535] flex items-center p-4 flex-1 shadow-sm relative overflow-hidden">
@@ -217,7 +217,7 @@ export default function Home() {
             <h3 className="text-lg font-bold">Apple</h3>
             <h4 className="text-xl font-bold mb-2">AirPods Max</h4>
             {/* FIX: Escaped the apostrophe in "it's" */}
-            <p className="text-gray-600 text-sm">Computational audio. Listen, it's powerful</p>
+            <p className="text-gray-600 text-sm">Computational audio. Listen, it&lsquo;s powerful</p>
           </div>
         </div>
          <div className="bg-[#353535] text-white flex flex-col items-center text-center p-8 gap-4">
