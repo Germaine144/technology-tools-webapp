@@ -2,8 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; // Import the Next.js Image component
-import { FiHeart } from 'react-icons/fi';
-import { useWishlist } from '../../context/WishlistContext';
+import WishlistButton from '@/components/WishlistButton';
 
 interface ProductCardProps {
   id: number;
@@ -14,6 +13,9 @@ interface ProductCardProps {
   category: string;
   isHighlighted?: boolean;
   fromCategory?: boolean;
+  brand?: string;
+  rating?: number;
+  discount?: number;
 }
 
 export default function ProductCard({ 
@@ -24,20 +26,24 @@ export default function ProductCard({
   price, 
   category, 
   isHighlighted,
-  fromCategory = false
+  fromCategory = false,
+  brand,
+  rating,
+  discount
 }: ProductCardProps) {
   console.log('ProductCard name prop:', name);
   const router = useRouter();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const isWishlisted = isInWishlist(id);
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isWishlisted) {
-      removeFromWishlist(id);
-    } else {
-      addToWishlist(id);
-    }
+  const product = {
+    id,
+    name,
+    description,
+    image,
+    price,
+    category,
+    brand,
+    rating,
+    discount
   };
 
   const handleCardClick = () => {
@@ -55,18 +61,13 @@ export default function ProductCard({
 
   return (
     <div
-      onClick={handleCardClick} // Make the entire card clickable
+      onClick={handleCardClick}
       className={`bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition text-center cursor-pointer relative border border-gray-100 ${isHighlighted ? 'ring-2 ring-blue-400' : ''}`}
       style={{ minHeight: 370 }}
     >
-      <button
-        onClick={handleWishlistClick}
-        className="absolute top-4 right-4 p-2 rounded-full bg-white shadow hover:bg-gray-100 transition-colors border border-gray-200"
-        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-        type="button"
-      >
-        <FiHeart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
-      </button>
+      <div className="absolute top-4 right-4">
+        <WishlistButton product={product} size="sm" />
+      </div>
       <div className="flex items-center justify-center mb-6" style={{ width: '180px', height: '180px', margin: '0 auto' }}>
         {/* Use the Next.js Image component for optimization */}
         <Image

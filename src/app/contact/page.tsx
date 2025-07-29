@@ -94,7 +94,7 @@ const ContactUs = () => {
             </div>
             <h3 className="text-lg sm:text-xl font-semibold mb-2">Call Us</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-2">Mon-Fri 9am-6pm</p>
-            <p className="text-base sm:text-lg font-medium text-gray-600">+971 56 498 3456</p>
+            <p className="text-base sm:text-lg font-medium text-gray-600">+250 791593529</p>
           </div>
           
           <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 text-center hover:shadow-2xl transition-shadow">
@@ -112,7 +112,7 @@ const ContactUs = () => {
             </div>
             <h3 className="text-lg sm:text-xl font-semibold mb-2">WhatsApp</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-2">Available 24/7</p>
-            <p className="text-base sm:text-lg font-medium text-purple-600">+971 55 343 6243</p>
+            <p className="text-base sm:text-lg font-medium text-purple-600">+250 971593529</p>
           </div>
         </div>
 
@@ -303,7 +303,7 @@ const ContactUs = () => {
                   <div className="min-w-0 flex-1">
                     <h4 className="font-semibold text-gray-800 mb-1 text-sm sm:text-base">Emergency Support</h4>
                     <p className="text-gray-600 text-sm sm:text-base">24/7 Emergency Line</p>
-                    <p className="text-purple-600 font-medium text-sm sm:text-base">+971 50 123 4567</p>
+                    <p className="text-purple-600 font-medium text-sm sm:text-base">+250 791593529</p>
                   </div>
                 </div>
               </div>

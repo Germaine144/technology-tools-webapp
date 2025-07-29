@@ -206,7 +206,7 @@ export default function ShoppingCartPage() {
               </div>
               
               {/* Checkout Button */}
-              <Link href="/checkout" className="block w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition-colors font-medium text-center text-sm sm:text-base">
+              <Link href="/checkout/address" className="block w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition-colors font-medium text-center text-sm sm:text-base">
                 Checkout
               </Link>
             </div>

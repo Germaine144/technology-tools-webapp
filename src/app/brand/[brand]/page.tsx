@@ -30,7 +30,7 @@ const filterOptions = {
     videoResolution: ['1080p', '4K', '6K', '8K'],
   },
   watches: {
-    brands: ['Apple', 'Samsung', 'Garmin', 'Fitbit', 'Huawei'],
+    brands: ['Apple', 'Samsung', 'Rolex', 'Omega', ''],
     screenType: ['OLED', 'AMOLED', 'LCD'],
     strapMaterial: ['Silicone', 'Leather', 'Stainless Steel'],
     features: ['Heart Rate', 'GPS', 'Sleep Tracking', 'ECG'],
