@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image'; // Import the Next.js Image component
+import WishlistButton from '@/components/WishlistButton';
 
 interface Product {
   id: number;
@@ -27,7 +28,6 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   // FIX: Destructured only the setter functions as the state variables were unused.
   const [, setSelectedColor] = useState<string>('');
   const [, setSelectedMemory] = useState<string>('');
@@ -100,12 +100,13 @@ export default function ProductDetailPage() {
               >
                 Buy Now
               </button>
-              <button
-                onClick={() => setIsWishlisted((w) => !w)}
-                className={`flex-1 py-3 rounded-lg border-2 font-semibold text-lg transition-all ${isWishlisted ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-300 hover:border-gray-400 text-gray-700'}`}
-              >
-                {isWishlisted ? '♥ Wishlist' : '♡ Wishlist'}
-              </button>
+              {product && (
+                <WishlistButton 
+                  product={product} 
+                  size="lg"
+                  className="flex-1 py-3 rounded-lg border-2 font-semibold text-lg"
+                />
+              )}
             </div>
           </div>
         </div>

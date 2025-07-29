@@ -12,6 +12,7 @@ import { FaCamera, FaHeadphones } from 'react-icons/fa';
 import { MdOutlineComputer } from 'react-icons/md';
 import { IoGameControllerSharp } from 'react-icons/io5';
 import { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Product {
   id: number;
@@ -33,11 +34,47 @@ const categoryIcons = [
   { title: "Gaming", icon: <IoGameControllerSharp /> },
 ];
 
+const categorySlugs: Record<string, string> = {
+  "Telephones": "phones",
+  "Smart Watch": "smartwatches",
+  "Camera": "cameras",
+  "Headphones": "headphones",
+  "Computers": "computers",
+  "Gaming": "gaming",
+  "Tablets": "tablets"
+};
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const router = useRouter();
+  const [modalImage, setModalImage] = useState<string | null>(null);
+  const [modalTitle, setModalTitle] = useState<string | null>(null);
+
+  
+  const categoryImages: Record<string, string> = {
+    "Telephones": "/image/samsung.png", 
+    "Smart Watch": "/image/watch.png",
+    "Camera": "/image/nikon2.jpg",
+    "Headphones": "/image/head.png",
+    "Computers": "/image/ui.png",
+    "Gaming": "/image/PlayStation.png",
+    "Tablets": "/image/tab.png"
+  };
+
+  // Handler for category click
+  const handleCategoryClick = (title: string) => {
+    if (title === "Telephones" || title === "Tablets") {
+      setModalImage(categoryImages[title] || null);
+      setModalTitle(title);
+    } else {
+      // Navigate to products page for the category using the slug map for correct routing
+      const slug = categorySlugs[title] || title.toLowerCase().replace(/ /g, '');
+      router.push(`/products/${slug}`);
+    }
+  };
 
   useEffect(() => {
     async function fetchProducts() {
@@ -56,11 +93,18 @@ export default function Home() {
   }, []);
 
   const { allProducts, popularProducts } = useMemo(() => {
+    // Updated order according to user requirements:
+    // 1. iPhone, 2. Camera, 3. Watch, 4. Headset, 5. Samsung Watch, 6. Samsung Phone, 7. Noise-canceling, 8. Computers, 9. Tablets
     const desiredOrder = [
-      "Apple iPhone 14 Pro", "Canon EOS R6 Mark II", "Apple Watch Series 8",
-      "AirPods Max Silver", "Samsung Galaxy Watch6 Classic 47mm Black",
-      "Galaxy Z Fold5 Unlocked | 256GB | Phantom Black", "Galaxy Buds FE Graphite",
-      'Apple iPad 9 10.2" 64GB Wi-Fi Silver (MK2L3) 2021'
+      "Apple iPhone 14 Pro",           // 1. iPhone
+      "Canon EOS M50 Mark II",         // 2. Camera
+      "Apple Watch Series 8",           // 3. Watch
+      "AirPods Max Silver",             // 4. Headset
+      "Samsung Galaxy Watch6 Classic 47mm Black", // 5. Samsung Watch
+      "Samsung Galaxy S23",             // 6. Samsung Phone
+      "Galaxy Buds FE Graphite",        // 7. Noise-canceling
+      "MacBook Pro 16",                 // 8. Computers
+      'Apple iPad 9 10.2" 64GB Wi-Fi Silver (MK2L3) 2021' // 9. Tablets
     ];
     const productsCopy = [...products];
     const orderedProducts = productsCopy.sort((a, b) => {
@@ -203,15 +247,20 @@ export default function Home() {
         <h1 className="text-2xl font-bold mb-4 dark:text-white">Browse By Category</h1>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-10">
           {categoryIcons.map((cat) => (
-            <CategoryCard key={cat.title} title={cat.title} icon={cat.icon} />
+            <CategoryCard
+              key={cat.title}
+              title={cat.title}
+              icon={cat.icon}
+              onClick={() => handleCategoryClick(cat.title)}
+            />
           ))}
         </div>
         <div className="flex gap-10 ">
-          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-white">New Arrival</Link>
-          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-white">Bestseller</Link>
-          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-white">Featured Products</Link>
+          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-black">New Arrival</Link>
+          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-black">Bestseller</Link>
+          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-black">Featured Products</Link>
         </div>
-        <h1 className="text-2xl font-bold mb-4 dark:text-white">All Products</h1>
+        {/* <h1 className="text-2xl font-bold mb-4 dark:text-black">All Product</h1> */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {allProducts.map((product) => (
             <ProductCard key={product.id} id={product.id} name={product.name} description={product.description} image={product.image} price={product.price} category={product.category}/>
@@ -286,6 +335,16 @@ export default function Home() {
         <Image src="/image/image 8.png" alt="Phone" width={121} height={121} className="absolute top-0 right-0 z-10 h-auto object-contain w-[70px] [transform:translateX(35%)_translateY(-25%)_rotate(31.47deg)] md:w-[120.36px] md:[transform:translateX(25%)_translateY(-25%)_rotate(31.47deg)]"/>
         <Image src="/image/image 7.png" alt="Watch" width={404} height={404} className="absolute bottom-0 right-0 z-10 h-auto object-contain w-[200px] [transform:translateX(35%)_translateY(35%)] md:w-[404px] md:[transform:translateX(25%)_translateY(25%)]"/>
       </section>
+      {/* Modal for showing image when phone or tablet is clicked */}
+      {modalImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white rounded-lg p-6 relative max-w-xs w-full flex flex-col items-center">
+            <button onClick={() => setModalImage(null)} className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl">×</button>
+            <h2 className="text-lg font-bold mb-4">{modalTitle}</h2>
+            <Image src={modalImage} alt={modalTitle || ''} width={220} height={220} className="object-contain" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

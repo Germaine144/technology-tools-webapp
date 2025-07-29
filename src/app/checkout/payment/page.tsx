@@ -1,25 +1,23 @@
 "use client";
 import React, { useState } from 'react';
+import { useCart } from '@/context/CartContext';
+import Image from 'next/image';
 
 export default function PaymentPage() {
   const [tab, setTab] = useState('credit');
   const [momoProvider, setMomoProvider] = useState('mtn');
   const [sameAsBilling, setSameAsBilling] = useState(true);
+  const { cart } = useCart();
 
-  // Dummy summary data
-  const summary = {
-    products: [
-      { name: 'Apple iPhone 14 Pro Max 128Gb', price: 1399, image: '/image/Iphone 14 pro 1.png' },
-      { name: 'AirPods Max Silver', price: 549, image: '/image/image 7.png' },
-      { name: 'Apple Watch Series 9 GPS 41mm', price: 399, image: '/image/watch.png' },
-    ],
-    address: '1131 Dusty Townline, Jacksonville, TX 40322',
-    shipping: 'Free',
-    subtotal: 2347,
-    tax: 50,
-    shippingFee: 29,
-    total: 2426,
-  };
+  // Calculate totals from actual cart
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.05; // 5% tax
+  const shippingFee = subtotal > 100 ? 0 : 29; // Free shipping over $100
+  const total = subtotal + tax + shippingFee;
+
+  // Dummy address and shipping (you can integrate with address context later)
+  const address = '1131 Dusty Townline, Jacksonville, TX 40322';
+  const shipping = subtotal > 100 ? 'Free Shipping' : 'Standard Shipping';
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 px-4 sm:py-8 sm:px-6 lg:py-12 lg:px-8 text-black">
@@ -37,48 +35,63 @@ export default function PaymentPage() {
               
               {/* Products */}
               <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                {summary.products.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 sm:p-4">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
-                        <span className="text-xs sm:text-sm text-gray-500">IMG</span>
-                      </div>
-                      <span className="font-medium text-gray-800 text-sm sm:text-base truncate">{item.name}</span>
-                    </div>
-                    <span className="font-semibold text-gray-900 text-sm sm:text-base ml-2">${item.price}</span>
+                {cart.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No items in cart</p>
                   </div>
-                ))}
+                ) : (
+                  cart.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 sm:p-4">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center overflow-hidden">
+                          <Image 
+                            src={item.image} 
+                            alt={item.name}
+                            width={48}
+                            height={48}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="font-medium text-gray-800 text-sm sm:text-base truncate block">{item.name}</span>
+                          <span className="text-xs text-gray-500">Qty: {item.quantity}</span>
+                        </div>
+                      </div>
+                      <span className="font-semibold text-gray-900 text-sm sm:text-base ml-2">${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  ))
+                )}
               </div>
               
               {/* Address */}
               <div className="mb-4">
                 <div className="mb-2 text-xs sm:text-sm text-gray-500 font-semibold uppercase tracking-wide">Shipping Address</div>
-                <div className="text-sm sm:text-base text-gray-700">{summary.address}</div>
+                <div className="text-sm sm:text-base text-gray-700">{address}</div>
               </div>
               
               {/* Shipping Method */}
               <div className="mb-6">
                 <div className="mb-2 text-xs sm:text-sm text-gray-500 font-semibold uppercase tracking-wide">Shipment Method</div>
-                <div className="text-sm sm:text-base text-gray-700">{summary.shipping}</div>
+                <div className="text-sm sm:text-base text-gray-700">{shipping}</div>
               </div>
               
               {/* Order Totals */}
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex justify-between text-sm sm:text-base mb-2">
                   <span>Subtotal</span>
-                  <span>${summary.subtotal}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base text-gray-500 mb-2">
                   <span>Estimated Tax</span>
-                  <span>${summary.tax}</span>
+                  <span>${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base text-gray-500 mb-4">
                   <span>Estimated Shipping & Handling</span>
-                  <span>${summary.shippingFee}</span>
+                  <span>${shippingFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg sm:text-xl border-t border-gray-200 pt-4">
                   <span>Total</span>
-                  <span>${summary.total}</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -280,7 +293,7 @@ export default function PaymentPage() {
                 <button
                   className="w-full sm:flex-1 py-3 sm:py-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm sm:text-base"
                 >
-                  Pay ${summary.total}
+                  Pay ${total.toFixed(2)}
                 </button>
               </div>
             </div>

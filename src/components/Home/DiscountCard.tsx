@@ -27,7 +27,6 @@ const DiscountProduct = ({
 
   return (
     <div 
-      onClick={handleClick}
       className={`rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${bgColor} overflow-hidden relative group cursor-pointer h-full flex flex-col`}
     >
       {/* Discount Badge */}
@@ -66,7 +65,7 @@ const DiscountProduct = ({
         )}
         <button
           className="w-full bg-black text-white py-3 px-6 rounded-2xl font-semibold hover:bg-gray-800 transition-colors duration-200 text-sm"
-          onClick={() => window.location.href = `/products/${id}`}
+          onClick={handleClick}
         >
           Buy Now
         </button>

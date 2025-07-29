@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FiHeart, FiShoppingCart, FiUser, FiMenu, FiX } from "react-icons/fi";
 import {
   IoIosPhonePortrait,
@@ -10,7 +11,7 @@ import {
 import { MdOutlineComputer } from "react-icons/md";
 import { FaCamera, FaHeadphones } from "react-icons/fa";
 import { IoLogoPlaystation } from "react-icons/io5";
-import { useWishlist } from '../../../src/context/WishlistContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 // import axios from "axios";
 // import { useRouter } from "next/navigation";
@@ -18,9 +19,8 @@ import { useCart } from '@/context/CartContext';
 const Navbar = () => {
   const [showWishlist, setShowWishlist] = useState(false);
   const [showCart, setShowCart] = useState(false);
-  const { wishlist } = useWishlist();
-  // FIX: Removed 'removeFromCart' from destructuring as it was unused.
-  const { cart } = useCart();
+  const { wishlist, removeFromWishlist } = useWishlist();
+  const { cart, removeFromCart } = useCart();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   // const router = useRouter();
 
@@ -90,7 +90,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-4 ml-4 relative">
                   {/* Wishlist Icon */}
                   <button className="p-2 hover:bg-gray-100 rounded-full relative" onClick={() => setShowWishlist(!showWishlist)} aria-label="Wishlist">
-                    <FiHeart className="w-5 h-5" />
+                    <FiHeart className="w-5 h-5 text-red-500" />
                     {wishlist.length > 0 && (<span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{wishlist.length}</span>)}
                   </button>
                   {/* Cart Icon */}
@@ -153,7 +153,7 @@ const Navbar = () => {
               <div className="border-t border-gray-200 pt-4">
                  <nav className="flex flex-col gap-1">
                     <Link href="/wishlist" className="flex items-center gap-3 py-2 text-gray-600 hover:bg-gray-100 rounded px-3" onClick={closeAllPopups}>
-                      <FiHeart className="w-5 h-5" /> Wishlist {wishlist.length > 0 && <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{wishlist.length}</span>}
+                      <FiHeart className="w-5 h-5 text-red-500" /> Wishlist {wishlist.length > 0 && <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{wishlist.length}</span>}
                     </Link>
                     <Link href="/cart" className="flex items-center gap-3 py-2 text-gray-600 hover:bg-gray-100 rounded px-3" onClick={closeAllPopups}>
                       <FiShoppingCart className="w-5 h-5" /> My Cart {totalItems > 0 && <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{totalItems}</span>}
@@ -186,9 +186,70 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Popups for Wishlist and Cart - no changes needed here */}
-      {showWishlist && ( <div className="absolute top-16 right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-50 border border-gray-200">{/* ... wishlist content ... */}</div>)}
-      {showCart && (<div className="absolute top-16 right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 border border-gray-200">{/* ... cart content ... */}</div>)}
+      {/* Popups for Wishlist and Cart - now with content */}
+      {showWishlist && (
+        <div className="absolute top-16 right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+          <div className="p-4">
+            <h3 className="font-bold mb-2">Wishlist</h3>
+            {wishlist.length === 0 ? (
+              <div className="text-gray-500">Your wishlist is empty.</div>
+            ) : (
+              <ul>
+                {wishlist.map(item => (
+                  <li key={item.id} className="flex items-center gap-2 mb-2">
+                    <Image src={item.image} alt={item.name} width={40} height={40} className="object-cover rounded" />
+                    <span>{item.name}</span>
+                    <button
+                      className="ml-auto p-1 rounded-full hover:bg-gray-200"
+                      aria-label="Remove from wishlist"
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to remove this item from your wishlist?')) {
+                          removeFromWishlist(item.id);
+                        }
+                      }}
+                    >
+                      <FiX className="w-4 h-4 text-gray-500" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link href="/wishlist" className="block mt-2 text-blue-600 hover:underline">View Full Wishlist</Link>
+          </div>
+        </div>
+      )}
+      {showCart && (
+        <div className="absolute top-16 right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+          <div className="p-4">
+            <h3 className="font-bold mb-2">Cart</h3>
+            {cart.length === 0 ? (
+              <div className="text-gray-500">Your cart is empty.</div>
+            ) : (
+              <ul>
+                {cart.map(item => (
+                  <li key={item.id} className="flex items-center gap-2 mb-2">
+                    <Image src={item.image} alt={item.name} width={40} height={40} className="object-cover rounded" />
+                    <span>{item.name}</span>
+                    <span className="ml-auto">x{item.quantity}</span>
+                    <button
+                      className="ml-2 p-1 rounded-full hover:bg-gray-200"
+                      aria-label="Remove from cart"
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to remove this item from your cart?')) {
+                          removeFromCart(item.id);
+                        }
+                      }}
+                    >
+                      <FiX className="w-4 h-4 text-gray-500" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link href="/cart" className="block mt-2 text-blue-600 hover:underline">Go to Cart</Link>
+          </div>
+        </div>
+      )}
     </>
   );
 }
