@@ -1,11 +1,8 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image'; // Import the Next.js Image component
+import Image from 'next/image';
 import ProductCard from '../Home/ProductCard';
 import CategoryCard from './CategoryCard';
-// Unused component imports are removed to fix the error.
-// import PopularProduct from './PopularProduct';
-// import DiscountProduct from './DiscountCard';
 import { IoIosPhonePortrait } from 'react-icons/io';
 import { BsSmartwatch } from 'react-icons/bs';
 import { FaCamera, FaHeadphones } from 'react-icons/fa';
@@ -53,7 +50,6 @@ export default function Home() {
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalTitle, setModalTitle] = useState<string | null>(null);
 
-  
   const categoryImages: Record<string, string> = {
     "Telephones": "/image/samsung.png", 
     "Smart Watch": "/image/watch.png",
@@ -70,7 +66,6 @@ export default function Home() {
       setModalImage(categoryImages[title] || null);
       setModalTitle(title);
     } else {
-      // Navigate to products page for the category using the slug map for correct routing
       const slug = categorySlugs[title] || title.toLowerCase().replace(/ /g, '');
       router.push(`/products/${slug}`);
     }
@@ -81,8 +76,19 @@ export default function Home() {
       try {
         const res = await fetch('/api/products');
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        setProducts(data);
+        const data: Product[] = await res.json();
+        
+        // FIX: More robust cleanup for incorrect image paths from the API
+        const correctedData = data.map(product => {
+            let imagePath = product.image.replace('/public', ''); // Step 1: Remove /public
+            imagePath = imagePath.replace('/image/image/', '/image/'); // Step 2: Fix duplicated /image segment
+            return {
+              ...product,
+              image: imagePath
+            };
+        });
+
+        setProducts(correctedData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -93,18 +99,16 @@ export default function Home() {
   }, []);
 
   const { allProducts, popularProducts } = useMemo(() => {
-    // Updated order according to user requirements:
-    // 1. iPhone, 2. Camera, 3. Watch, 4. Headset, 5. Samsung Watch, 6. Samsung Phone, 7. Noise-canceling, 8. Computers, 9. Tablets
     const desiredOrder = [
-      "Apple iPhone 14 Pro",           // 1. iPhone
-      "Canon EOS M50 Mark II",         // 2. Camera
-      "Apple Watch Series 8",           // 3. Watch
-      "AirPods Max Silver",             // 4. Headset
-      "Samsung Galaxy Watch6 Classic 47mm Black", // 5. Samsung Watch
-      "Samsung Galaxy S23",             // 6. Samsung Phone
-      "Galaxy Buds FE Graphite",        // 7. Noise-canceling
-      "MacBook Pro 16",                 // 8. Computers
-      'Apple iPad 9 10.2" 64GB Wi-Fi Silver (MK2L3) 2021' // 9. Tablets
+      "Apple iPhone 14 Pro",
+      "Canon EOS M50 Mark II",
+      "Apple Watch Series 8",
+      "AirPods Max Silver",
+      "Samsung Galaxy Watch6 Classic 47mm Black",
+      "Samsung Galaxy S23",
+      "Galaxy Buds FE Graphite",
+      "MacBook Pro 16",
+      'Apple iPad 9 10.2" 64GB Wi-Fi Silver (MK2L3) 2021'
     ];
     const productsCopy = [...products];
     const orderedProducts = productsCopy.sort((a, b) => {
@@ -123,7 +127,6 @@ export default function Home() {
       popularProducts: products
         .filter(p => popularProductIds.includes(p.id)) 
         .sort((a, b) => popularProductIds.indexOf(a.id) - popularProductIds.indexOf(b.id)),
-      // Removed unused 'discountedProducts' to fix the error.
     };
   }, [products]);
 
@@ -183,8 +186,7 @@ export default function Home() {
                 <h3 className="text-lg font-bold mb-1">Apple</h3>
                 <h4 className="text-lg font-bold mb-2">AirPods Max</h4>
                 {/* FIX: Escaped the apostrophe in "it's" */}
-               <p className="text-gray-600 text-xs">Computational audio.<br />Listen, it&apos;s powerful</p>
-
+                <p className="text-gray-600 text-xs">Computational audio.<br />Listen, it's powerful</p>
               </div>
             </div>
             <div className="bg-[#353535] flex items-center p-4 flex-1 shadow-sm relative overflow-hidden">
@@ -215,7 +217,7 @@ export default function Home() {
             <h3 className="text-lg font-bold">Apple</h3>
             <h4 className="text-xl font-bold mb-2">AirPods Max</h4>
             {/* FIX: Escaped the apostrophe in "it's" */}
-            <p className="text-gray-600 text-sm">Computational audio. Listen, it&apos;s powerful</p>
+            <p className="text-gray-600 text-sm">Computational audio. Listen, it's powerful</p>
           </div>
         </div>
          <div className="bg-[#353535] text-white flex flex-col items-center text-center p-8 gap-4">
@@ -244,7 +246,7 @@ export default function Home() {
       </div>
 
       <main className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4 dark:text-white">Browse By Category</h1>
+        <h1 className="text-2xl font-bold mb-4">Browse By Category</h1>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-10">
           {categoryIcons.map((cat) => (
             <CategoryCard
@@ -256,11 +258,11 @@ export default function Home() {
           ))}
         </div>
         <div className="flex gap-10 ">
-          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-black">New Arrival</Link>
-          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-black">Bestseller</Link>
-          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer dark:text-black">Featured Products</Link>
+          {/* FIX: Removed dark:text-black for better dark mode compatibility */}
+          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer">New Arrival</Link>
+          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer">Bestseller</Link>
+          <Link href="/products" className="text-xl font-bold mb-4 hover:underline cursor-pointer">Featured Products</Link>
         </div>
-        {/* <h1 className="text-2xl font-bold mb-4 dark:text-black">All Product</h1> */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {allProducts.map((product) => (
             <ProductCard key={product.id} id={product.id} name={product.name} description={product.description} image={product.image} price={product.price} category={product.category}/>
@@ -315,7 +317,8 @@ export default function Home() {
       </section>
       
       <main className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold my-6 dark:text-black">Discounts up to -50%</h1>
+        {/* FIX: Removed dark:text-black for better dark mode compatibility */}
+        <h1 className="text-2xl font-bold my-6">Discounts up to -50%</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {products.slice(0, 4).map((product) => (
             <ProductCard key={product.id} id={product.id} name={product.name} description={product.description} image={product.image} price={product.price} category={product.category}/>
@@ -335,7 +338,7 @@ export default function Home() {
         <Image src="/image/image 8.png" alt="Phone" width={121} height={121} className="absolute top-0 right-0 z-10 h-auto object-contain w-[70px] [transform:translateX(35%)_translateY(-25%)_rotate(31.47deg)] md:w-[120.36px] md:[transform:translateX(25%)_translateY(-25%)_rotate(31.47deg)]"/>
         <Image src="/image/image 7.png" alt="Watch" width={404} height={404} className="absolute bottom-0 right-0 z-10 h-auto object-contain w-[200px] [transform:translateX(35%)_translateY(35%)] md:w-[404px] md:[transform:translateX(25%)_translateY(25%)]"/>
       </section>
-      {/* Modal for showing image when phone or tablet is clicked */}
+      
       {modalImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
           <div className="bg-white rounded-lg p-6 relative max-w-xs w-full flex flex-col items-center">

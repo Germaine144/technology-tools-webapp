@@ -47,7 +47,7 @@ export default function ProductCard({
   };
 
   const handleCardClick = () => {
-    router.push(`/product/${id}`);
+    // router.push(`/product/${id}`);
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {

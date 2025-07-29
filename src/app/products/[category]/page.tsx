@@ -220,7 +220,7 @@ const MOCK_PRODUCTS: Product[] = [
 
   //Canon
 
- { id: 77, name: "Canon EOS M50 Mark II", price: 4299.00, description: "Compact mirrorless camera ideal for vlogging and content creation.", image: "/image/nikon2.jpg", category: "cameras", brand: "Canon", processor: "DIGIC 8", ram: "Not Applicable", storage: "SD Card", graphics: "Not Applicable", rating: 4.9 },
+ { id: 77, name: "Canon EOS M50 Mark II", price: 4299.00, description: "Compact mirrorless camera ideal for vlogging and content creation.", image: "/image/canon1.jpg", category: "cameras", brand: "Canon", processor: "DIGIC 8", ram: "Not Applicable", storage: "SD Card", graphics: "Not Applicable", rating: 4.9 },
   { id: 78, name: "Canon EOS M50 Mark II", price: 1199.00, description: "Compact mirrorless camera ideal for vlogging and .", image: "/image/canon2.jpg", category: "cameras", brand: "Canon", processor: "DIGIC 7", ram: "Not Applicable", storage: "SD Card", graphics: "Not Applicable", rating: 4.5 },
   { id: 79, name: "MSI Stealth 16 Studio", price: 1999.00, description: "A crossover laptop for gaming and content creation in a thin profile.", image: "/image/canon2.jpg", category: "cameras", brand: "Canon", processor: "Intel i7", ram: "32GB", storage: "1TB SSD", graphics: "NVIDIA RTX", rating: 4.7 },
 
